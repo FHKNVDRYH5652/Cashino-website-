@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TashanWin • WinGo (Offline Working)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1218; --panel:#171b23; --muted:#202635; --ink:#e8e9ef; --sub:#cfd2db;
+    --orange:#f5a524; --green:#22c55e; --red:#ef4444; --violet:#8b5cf6; --blue:#4e95ff;
+    --chip-shadow: inset 0 8px 12px rgba(255,255,255,.12), inset 0 -12px 18px rgba(0,0,0,.35), 0 8px 16px rgba(0,0,0,.35);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  .wrap{max-width:1100px;margin:0 auto;padding:14px 12px 120px}
+  /* Wallet + Banner */
+  .walletCard{background:linear-gradient(180deg,#21283a,#1a1f2e);border:1px solid #2a3042;border-radius:14px;padding:16px;display:flex;gap:12px;align-items:center;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+  .wLeft{flex:1}
+  .wb{font-size:14px;opacity:.85}
+  .wa{font-size:28px;font-weight:800}
+  .btn{border:none;border-radius:12px;padding:10px 16px;font-weight:800;cursor:pointer}
+  .btn.withdraw{background:#ef4444;color:#fff}
+  .btn.deposit{background:#22c55e;color:#082213}
+  .banner{margin-top:12px;background:linear-gradient(90deg,#2a2f3a,#202534);border:1px solid #2f3445;border-radius:14px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
+  .detail{background:linear-gradient(180deg,#f7c56a,#f39e1f);color:#1a1203;border:none;border-radius:20px;padding:10px 16px;font-weight:800}
+  /* Modes */
+  .modes{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+  .mode{background:#262a35;border:2px solid #333a4f;border-radius:16px;padding:12px;text-align:center;color:#cfd6e8;cursor:pointer;font-weight:800}
+  .mode.active{background:linear-gradient(180deg,#ffd89b,#ffbd59);border-color:#ffdfae;color:#251604;box-shadow:0 10px 28px rgba(0,0,0,.35)}
+  /* Main row */
+  .row{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:14px}
+  .card{background:var(--panel);border-radius:16px;border:1px solid #2a3042;box-shadow:0 10px 28px rgba(0,0,0,.35)}
+  .timerBox{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px dashed #2d344b}
+  .tLeft{padding:14px}
+  .how{display:inline-flex;align-items:center;gap:8px;border:1px solid #3a4057;border-radius:30px;padding:10px 14px;background:#141823}
+  .tRight{padding:14px;text-align:right}
+  .remain{font-size:12px;opacity:.85}
+  .digits{display:inline-flex;gap:6px;margin-top:6px}
+  .seg{background:#0c1019;border:2px solid #1f2433;border-radius:8px;padding:8px 10px;font-weight:800;font-size:28px;min-width:40px;text-align:center;box-shadow:inset 0 -6px 10px rgba(0,0,0,.25)}
+  .period{margin-top:4px;opacity:.8}
+  /* Bet options */
+  .colorBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px}
+  .cbtn{height:56px;border-radius:14px;font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+  .cbtn.g{background:#17b455;color:#041e12}
+  .cbtn.v{background:#7a66f6;color:#fff}
+  .cbtn.r{background:#ee4545;color:#2a0a0a}
+  .chipGrid{padding:0 16px 16px; display:grid;grid-template-columns:repeat(5,1fr);gap:12px;justify-items:center}
+  .chip{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:22px;cursor:pointer;box-shadow:var(--chip-shadow);color:#17202b}
+  .chip.r{background:radial-gradient(circle at 30% 30%,#ffb3b9,#ff6b72 55%,#b8242f)}
+  .chip.g{background:radial-gradient(circle at 30% 30%,#b6f7c4,#51e084 55%,#148f3d)}
+  .chip.v{background:radial-gradient(circle at 30% 30%,#dfd2ff,#b79cff 55%,#5b39b7);color:#fff}
+  .multRow{display:flex;align-items:center;gap:10px;border-top:1px dashed #2d3348;padding:14px 16px}
+  .rnd{border:2px solid #8b2c2c;color:#e26d6d;background:transparent;padding:10px 16px;border-radius:12px;font-weight:800;cursor:pointer}
+  .mult{display:flex;gap:8px;flex-wrap:wrap}
+  .pill{border-radius:12px;padding:10px 14px;background:#1a1f2c;border:1px solid #2f3650;cursor:pointer;font-weight:800}
+  .pill.sel{background:#10b981;color:#04160f;border-color:#0e9f6e}
+  .bigSmall{display:flex;gap:10px;padding:0 16px 16px}
+  .bs{flex:1;border:none;border-radius:26px;padding:16px 18px;font-weight:900;font-size:22px;cursor:pointer}
+  .bs.big{background:#f4a31a;color:#1d1203}
+  .bs.small{background:#4e95ff;color:#071320}
+  /* History */
+  .hWrap{padding:16px}
+  .hTitle{font-weight:800;margin-bottom:12px}
+  .hTable{border-radius:16px;overflow:hidden;border:1px solid #2a3042}
+  table{width:100%;border-collapse:collapse}
+  thead th{background:#201a12;color:#f9d195;padding:12px 14px;text-align:left}
+  tbody td{padding:12px 14px;border-top:1px solid #252a3b}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+  .dot.r{background:#ef4444} .dot.g{background:#22c55e} .dot.v{background:#8b5cf6}
+  .pager{display:flex;justify-content:flex-end;align-items:center;gap:12px;padding:12px}
+  .pgBtn{background:#1a1f2c;border:1px solid #2f3650;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+  /* Drawer */
+  .drawer{position:fixed;left:0;right:0;bottom:-100%;background:linear-gradient(180deg,#121622,#0a0f1b);border-top-left-radius:22px;border-top-right-radius:22px;border-top:1px solid #222a3c;transition:bottom .35s;z-index:40}
+  .drawer.open{bottom:0}
+  .dHead{display:flex;justify-content:center;align-items:center;padding:14px}
+  .tag{padding:8px 14px;border-radius:10px;font-weight:900}
+  .tag.orange{background:#ffedd5;color:#8a3a0a}
+  .tag.blue{background:#dbeafe;color:#1e40af}
+  .tag.num{background:#f1f5f9;color:#0f172a}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}
+  .box{background:#0c111a;border:1px solid #223047;border-radius:14px;padding:12px}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  .mini{background:#0f1420;border:1px solid #27334d;border-radius:10px;padding:8px 12px;cursor:pointer}
+  .mini.active{outline:2px solid #ffffff22}
+  .qtybox{display:flex;align-items:center;gap:10px}
+  .qtybox input{width:100%;background:#0e1420;border:1px solid #27334d;border-radius:10px;padding:10px;color:#fff;font-size:16px}
+  .square{width:42px;height:42px;display:grid;place-items:center;background:#0e1420;border:1px solid #27334d;border-radius:10px;cursor:pointer}
+  .cta{position:sticky;bottom:0;background:#0a0f1a;border-top:1px solid #20283a;padding:12px}
+  .cta button{width:100%;padding:14px;border-radius:12px;background:#4e95ff;border:none;font-weight:800;font-size:16px;color:#fff;cursor:pointer}
+  .muted{opacity:.8;font-size:12px}
+  /* Toast */
+  .toast{position:fixed;left:50%;transform:translateX(-50%);top:20px;background:#000a;border-radius:10px;padding:10px 16px;color:#fff;opacity:0;pointer-events:none;transition:all .25s;z-index:70}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  /* Result popup */
+  .popup{position:fixed;left:50%;top:50%;transform:translate(-50%,-60%) scale(.98);opacity:0;pointer-events:none;transition:all .25s;z-index:60}
+  .popup.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
+  .panel{width:min(520px,94vw);background:linear-gradient(180deg,#fff,#f8f8fb);border-radius:24px;box-shadow:0 40px 80px rgba(0,0,0,.35);padding:18px 18px 10px;color:#1f2937;position:relative}
+  .panel.win{background:linear-gradient(180deg,#fff7eb,#ffedd5)}
+  .panel.lose{background:linear-gradient(180deg,#eff6ff,#f8fafc)}
+  .badge{position:absolute;left:50%;top:-38px;transform:translateX(-50%);width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:#ffedd5;border:6px solid #fff;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .badge.lose{background:#e5e7eb}
+  .bigtitle{font-size:28px;font-weight:800;text-align:center;margin-top:8px}
+  .roll{margin:12px auto 0;background:#fff;border-radius:14px;padding:12px 16px;font-weight:800;box-shadow:inset 0 -6px 12px rgba(0,0,0,.06);text-align:center}
+  .sub{font-size:13px;text-align:center;opacity:.8}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="walletCard">
+    <div class="wLeft">
+      <div class="wb">Wallet balance</div>
+      <div class="wa" id="walletAmt">₹0.00</div>
+    </div>
+    <div>
+      <button class="btn withdraw">Withdraw</button>
+      <button class="btn deposit" id="add100">Deposit</button>
+    </div>
+  </div>
+
+  <div class="banner">
+    <div class="left"><span>🔊</span><div>Welcome to TASHANWIN game platform, we will serve you wholeheartedly!</div></div>
+    <button class="detail">Detail</button>
+  </div>
+
+  <div class="modes" id="modeTabs">
+    <div class="mode active" data-mode="30s"><small>WinGo</small><div>30sec</div></div>
+    <div class="mode" data-mode="1m"><small>WinGo</small><div>1 Min</div></div>
+    <div class="mode" data-mode="3m"><small>WinGo</small><div>3 Min</div></div>
+    <div class="mode" data-mode="5m"><small>WinGo</small><div>5 Min</div></div>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <div class="timerBox">
+        <div class="tLeft">
+          <div class="how">💬 How to play</div>
+          <div style="margin-top:8px;opacity:.85">WinGo <span id="modeLabel">30sec</span></div>
+        </div>
+        <div class="tRight">
+          <div class="remain">Time remaining</div>
+          <div class="digits" id="digits"><div class="seg">0</div><div class="seg">0</div><div class="seg">:</div><div class="seg">3</div><div class="seg">0</div><div class="seg"> sec</div></div>
+          <div class="period" id="periodId">—</div>
+        </div>
+      </div>
+
+      <div class="colorBtns">
+        <div class="cbtn g" data-bet="GREEN">Green</div>
+        <div class="cbtn v" data-bet="VIOLET">Violet</div>
+        <div class="cbtn r" data-bet="RED">Red</div>
+      </div>
+
+      <div class="chipGrid">
+        <div class="chip v" data-num="0">0</div>
+        <div class="chip g" data-num="1">1</div>
+        <div class="chip r" data-num="2">2</div>
+        <div class="chip g" data-num="3">3</div>
+        <div class="chip r" data-num="4">4</div>
+        <div class="chip v" data-num="5">5</div>
+        <div class="chip r" data-num="6">6</div>
+        <div class="chip g" data-num="7">7</div>
+        <div class="chip r" data-num="8">8</div>
+        <div class="chip g" data-num="9">9</div>
+      </div>
+
+      <div class="multRow">
+        <button class="rnd" id="randomBtn">Random</button>
+        <div class="mult" id="multBtns">
+          <div class="pill sel" data-m="1">X1</div>
+          <div class="pill" data-m="5">X5</div>
+          <div class="pill" data-m="10">X10</div>
+          <div class="pill" data-m="20">X20</div>
+          <div class="pill" data-m="50">X50</div>
+          <div class="pill" data-m="100">X100</div>
+        </div>
+      </div>
+
+      <div class="bigSmall">
+        <button class="bs big" data-bet="BIG">Big</button>
+        <button class="bs small" data-bet="SMALL">Small</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="hWrap">
+        <div class="hTitle">Game history</div>
+        <div class="hTable">
+          <table>
+            <thead><tr><th style="width:36%">Period</th><th style="width:14%">Number</th><th style="width:18%">Big Small</th><th>Color</th></tr></thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+        <div class="pager">
+          <button class="pgBtn" id="prevPage">◀</button>
+          <div id="pageLabel">1/50</div>
+          <button class="pgBtn" id="nextPage">▶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Bet Successful</div>
+
+<!-- Drawer -->
+<div class="drawer" id="drawer">
+  <div class="dHead"><div class="tag num" id="drawerTag">Select</div></div>
+  <div class="grid">
+    <div class="box">
+      <div style="font-weight:800;margin-bottom:8px">Balance</div>
+      <div class="row" id="balancePresets">
+        <div class="mini" data-p="1">1</div>
+        <div class="mini" data-p="10">10</div>
+        <div class="mini" data-p="100">100</div>
+        <div class="mini" data-p="1000">1000</div>
+      </div>
+      <div class="muted">Upper balance buttons <b>quantity ko multiply</b> karte hain.</div>
+    </div>
+    <div class="box">
+      <div style="font-weight:800;margin-bottom:8px">Quantity</div>
+      <div class="qtybox">
+        <div class="square" id="minus">-</div>
+        <input id="qty" type="number" min="1" value="1" />
+        <div class="square" id="plus">+</div>
+      </div>
+    </div>
+    <div class="box">
+      <div style="font-weight:800;margin-bottom:8px">Multiply (Total amount only)</div>
+      <div class="row" id="amountMult">
+        <div class="mini active" data-m="1">X1</div>
+        <div class="mini" data-m="5">X5</div>
+        <div class="mini" data-m="10">X10</div>
+        <div class="mini" data-m="20">X20</div>
+        <div class="mini" data-m="50">X50</div>
+        <div class="mini" data-m="100">X100</div>
+      </div>
+      <div class="muted">Neeche ke multipliers sirf <b>Total amount</b> par apply hote hain.</div>
+    </div>
+    <div class="box">
+      <div style="font-weight:800;margin-bottom:8px">Summary</div>
+      <div class="muted" id="summaryLine">Qty 1 × X1 = ₹1</div>
+    </div>
+  </div>
+  <div class="cta"><button id="placeBetBtn">Total amount ₹<span id="totalAmt">1</span></button></div>
+</div>
+
+<!-- Result popup -->
+<div class="popup" id="resultPopup">
+  <div class="panel" id="resultPanel">
+    <div class="badge" id="badge">🚀</div>
+    <div class="bigtitle" id="resultTitle">Congratulations</div>
+    <div class="roll" id="resultRoll">Lottery results —</div>
+    <div class="bigtitle" id="resultAmount">Bonus ₹0.00</div>
+    <div class="sub" id="resultPeriod">Period —</div>
+    <div class="sub">3 seconds auto close</div>
+  </div>
+</div>
+
+<script>
+  // ----- Utilities -----
+  const pad = n => n.toString().padStart(2,"0");
+  const fmtINR = n => "₹"+(n||0).toFixed(2);
+  const modes = { "30s":30, "1m":60, "3m":180, "5m":300 };
+  let currentMode = "30s";
+  let qty=1, amountMult=1, activeBet=null;
+  const digits = document.getElementById("digits");
+  const periodIdEl = document.getElementById("periodId");
+  const modeLabel = document.getElementById("modeLabel");
+  const walletAmtEl = document.getElementById("walletAmt");
+  const toast = document.getElementById("toast");
+  const historyBody = document.getElementById("historyBody");
+  const pageLabel = document.getElementById("pageLabel");
+  const prevPage = document.getElementById("prevPage");
+  const nextPage = document.getElementById("nextPage");
+
+  // Local storage keys
+  const K_WALLET = "wingo_wallet";
+  const K_HISTORY = "wingo_hist_"; // per mode
+  const K_BET = "wingo_bet_"; // pending bet per mode+period
+
+  function now(){ return Date.now(); }
+
+  function periodInfo(mode){
+    const iv = modes[mode];
+    const t = Math.floor(now()/1000);
+    const next = Math.floor((t+iv)/iv)*iv;
+    const remain = next - t;
+    const d = new Date(next*1000);
+    const id = d.getFullYear().toString()+pad(d.getMonth()+1)+pad(d.getDate())+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds());
+    return { iv, remain, id };
+  }
+
+  function renderDigits(rem, iv){
+    const mm = pad(Math.floor(rem/60));
+    const ss = pad(rem%60);
+    const unit = iv>=60 ? "min" : "sec";
+    digits.innerHTML = \`<div class="seg">\${mm[0]}</div><div class="seg">\${mm[1]}</div><div class="seg">:</div><div class="seg">\${ss[0]}</div><div class="seg">\${ss[1]}</div><div class="seg"> \${unit}</div>\`;
+  }
+
+  function colorOf(n){
+    if(n===0) return ["VIOLET"];
+    if(n===5) return ["GREEN","VIOLET"];
+    if([2,4,6,8].includes(n)) return ["RED"];
+    return ["GREEN"];
+  }
+  const bigSmallOf = n => n>=5?"BIG":"SMALL";
+
+  // Wallet
+  function loadWallet(){
+    let w = Number(localStorage.getItem(K_WALLET));
+    if(!w && w!==0){ w = 100; localStorage.setItem(K_WALLET, w); }
+    walletAmtEl.textContent = fmtINR(w);
+  }
+  function addWallet(delta){
+    let w = Number(localStorage.getItem(K_WALLET)||0);
+    w += delta;
+    if(w<0) w = 0;
+    localStorage.setItem(K_WALLET, w);
+    walletAmtEl.textContent = fmtINR(w);
+  }
+  loadWallet();
+  document.getElementById("add100").onclick = ()=> addWallet(100);
+
+  // Toast
+  function showToast(msg){ toast.textContent = msg; toast.classList.add("show"); setTimeout(()=> toast.classList.remove("show"), 1400); }
+
+  // Drawer logic
+  const drawer = document.getElementById("drawer"), drawerTag=document.getElementById("drawerTag");
+  const qtyInput = document.getElementById("qty");
+  const totalAmt = document.getElementById("totalAmt");
+  const summaryLine = document.getElementById("summaryLine");
+  document.getElementById("minus").onclick=()=>{ qty=Math.max(1,(parseInt(qty)||1)-1); qtyInput.value=qty; updTot(); };
+  document.getElementById("plus").onclick =()=>{ qty=(parseInt(qty)||1)+1; qtyInput.value=qty; updTot(); };
+  qtyInput.addEventListener("input",()=>{ qty=Math.max(1,parseInt(qtyInput.value||'1')); updTot(); });
+  document.querySelectorAll("#balancePresets .mini").forEach(x=> x.onclick=()=>{ qty=(parseInt(qty)||1)*(parseInt(x.dataset.p)); qtyInput.value=qty; highlight(x,"#balancePresets"); updTot();});
+  document.querySelectorAll("#amountMult .mini").forEach(x=> x.onclick=()=>{ amountMult=parseInt(x.dataset.m); highlight(x,"#amountMult"); updTot();});
+  function highlight(el,scope){ document.querySelectorAll(scope+" .mini").forEach(y=>y.classList.remove("active")); el.classList.add("active"); }
+  function updTot(){ totalAmt.textContent = qty*amountMult; summaryLine.textContent = \`Qty \${qty} × X\${amountMult} = ₹\${qty*amountMult}\`; }
+
+  function openDrawerFrom(el){
+    let type="", tag="num", value=null, title="Select";
+    if(el.classList.contains("bs")){ type=el.dataset.bet; title = type==="BIG"?"Select Big":"Select Small"; tag = type==="BIG"?"orange":"blue"; }
+    else if(el.classList.contains("cbtn")){ type=el.dataset.bet; title="Select "+type[0]+type.slice(1).toLowerCase(); tag="num"; }
+    else if(el.classList.contains("chip")){ type="NUMBER"; value=parseInt(el.dataset.num); title="Select Number "+value; tag="num"; }
+    drawerTag.className="tag "+tag; drawerTag.textContent=title; activeBet={type,value}; drawer.classList.add("open");
+  }
+  function closeDrawer(){ drawer.classList.remove("open"); }
+  document.getElementById("placeBetBtn").onclick = ()=>{
+    const { id } = periodInfo(currentMode);
+    const amount = qty*amountMult;
+    const bet = { ...activeBet, amount, periodId:id, mode:currentMode, createdAt:Date.now() };
+    localStorage.setItem(K_BET+currentMode+id, JSON.stringify(bet));
+    showToast("Bet Successful");
+    closeDrawer();
+  };
+  document.addEventListener("click",(e)=>{
+    if(drawer.classList.contains("open")){
+      const inside = e.target.closest(".drawer,.bs,.cbtn,.chip"); if(!inside) closeDrawer();
+    }
+  });
+
+  // Bind clicks
+  document.querySelectorAll(".bs,.cbtn,.chip").forEach(el=> el.addEventListener("click",()=> openDrawerFrom(el)));
+
+  // Modes
+  document.querySelectorAll(".mode").forEach(el=> el.onclick=()=>{
+    document.querySelectorAll(".mode").forEach(x=>x.classList.remove("active")); el.classList.add("active");
+    currentMode = el.dataset.mode; modeLabel.textContent = el.querySelector("div").textContent;
+    bindHistory(); // reload
+  });
+
+  // History helpers
+  const ROWS = 10, PAGES = 50; let page=1, histCache=[];
+  function readHist(mode){
+    try{ return JSON.parse(localStorage.getItem(K_HISTORY+mode)||"[]"); }catch{ return []; }
+  }
+  function writeHist(mode, arr){
+    // Keep up to ROWS*PAGES newest
+    const keep = arr.slice(-ROWS*PAGES);
+    localStorage.setItem(K_HISTORY+mode, JSON.stringify(keep));
+  }
+  function renderPage(){
+    const start=(page-1)*ROWS, slice = histCache.slice().reverse().slice(start,start+ROWS);
+    historyBody.innerHTML = slice.map(r=>{
+      const dots = (r.colors||[]).map(c=>'<span class="dot '+({RED:'r',GREEN:'g',VIOLET:'v'}[c])+'"></span>').join("");
+      return `<tr><td>${r.id}</td><td style="font-weight:900">${r.num}</td><td>${r.bigSmall[0]+r.bigSmall.slice(1).toLowerCase()}</td><td>${dots}</td></tr>`;
+    }).join("");
+  }
+  function bindHistory(){
+    histCache = readHist(currentMode);
+    page=1; pageLabel.textContent = `${page}/${PAGES}`;
+    renderPage();
+  }
+  prevPage.onclick=()=>{ if(page>1){ page--; pageLabel.textContent=`${page}/${PAGES}`; renderPage(); } };
+  nextPage.onclick=()=>{ if(page<PAGES){ page++; pageLabel.textContent=`${page}/${PAGES}`; renderPage(); } };
+  bindHistory();
+
+  // Settlement + popup
+  const popup = document.getElementById("resultPopup");
+  const panel = document.getElementById("resultPanel");
+  const resultTitle = document.getElementById("resultTitle");
+  const resultRoll = document.getElementById("resultRoll");
+  const resultAmount = document.getElementById("resultAmount");
+  const resultPeriod = document.getElementById("resultPeriod");
+  function showResult(win,res,mode,amount){
+    panel.className = "panel "+(win?"win":"lose");
+    resultTitle.textContent = win? "Congratulations":"Sorry";
+    const cols=(res.colors||[]).map(c=> c[0]+c.slice(1).toLowerCase()).join(" + ");
+    resultRoll.textContent = `Lottery results  ${cols}  ${res.num}  ${res.bigSmall[0]+res.bigSmall.slice(1).toLowerCase()}`;
+    resultAmount.textContent = win? `Bonus ${fmtINR(amount)}` : "Lose";
+    resultPeriod.textContent = `Period: WinGo ${mode}  •  ${res.id}`;
+    popup.classList.add("show"); setTimeout(()=> popup.classList.remove("show"), 3000);
+  }
+
+  function settleIfAny(mode,id,res){
+    const key = K_BET+mode+id;
+    const raw = localStorage.getItem(key);
+    if(!raw) return;
+    localStorage.removeItem(key);
+    const bet = JSON.parse(raw);
+    let win=false, x=1.96;
+    if(bet.type==="BIG"||bet.type==="SMALL"){ win = res.bigSmall===bet.type; x=1.96; }
+    else if(bet.type==="NUMBER"){ win = res.num===bet.value; x=7.8; }
+    else if(["RED","GREEN","VIOLET"].includes(bet.type)){ win = (res.colors||[]).includes(bet.type); x=1.96; }
+    const amt = Number(bet.amount||0);
+    addWallet(-amt);
+    if(win) addWallet(amt*x);
+    showResult(win,res,mode, win? amt*x:0);
+  }
+
+  // Timer loop
+  let raf=null;
+  function loop(){
+    const {iv, remain, id} = periodInfo(currentMode);
+    renderDigits(remain, iv);
+    periodIdEl.textContent = id;
+    if(remain===0){
+      // Generate random result & store to history
+      const num = Math.floor(Math.random()*10);
+      const res = { id, num, bigSmall:bigSmallOf(num), colors:colorOf(num), at:Date.now() };
+      const arr = readHist(currentMode); arr.push(res); writeHist(currentMode, arr);
+      bindHistory();
+      // Settle any user bet for this period
+      settleIfAny(currentMode, id, res);
+    }
+    raf = requestAnimationFrame(loop);
+  }
+  loop();
+
+  // Random picks
+  document.getElementById("randomBtn").onclick = ()=>{
+    const all = Array.from(document.querySelectorAll(".bs,.cbtn,.chip"));
+    const pick = all[Math.floor(Math.random()*all.length)];
+    openDrawerFrom(pick);
+  };
+</script>
+</body>
+</html>
