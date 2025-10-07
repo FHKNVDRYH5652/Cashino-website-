@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RATAN WIN - Register</title>
+  <style>
+    body{
+      margin:0;
+      font-family:Poppins, sans-serif;
+      background:#111;
+      color:#fff;
+    }
+    header{
+      background:#1c1c1c;
+      padding:10px 15px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .logo{
+      font-size:22px;
+      font-weight:800;
+      background:linear-gradient(90deg,#ff7e22,#25b63c);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .flag{
+      font-size:14px;
+    }
+    main{
+      padding:20px;
+    }
+    h2{
+      font-size:20px;
+      margin-bottom:5px;
+    }
+    p.desc{
+      font-size:14px;
+      color:#aaa;
+      margin-bottom:20px;
+    }
+    label{
+      display:block;
+      font-size:14px;
+      margin:15px 0 5px;
+    }
+    input{
+      width:100%;
+      padding:12px;
+      border-radius:6px;
+      border:none;
+      background:#222;
+      color:#fff;
+    }
+    .checkbox{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:15px;
+    }
+    .checkbox a{color:red;text-decoration:none}
+    button{
+      width:100%;
+      padding:14px;
+      margin-top:20px;
+      border:none;
+      border-radius:30px;
+      background:linear-gradient(90deg,#ffb321,#ff7e22);
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .login-link{
+      margin-top:15px;
+      text-align:center;
+      font-size:14px;
+    }
+    .login-link a{color:#ffb321;text-decoration:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">RATAN WIN</div>
+    <div class="flag">🌐 EN</div>
+  </header>
+  <main>
+    <h2>Register</h2>
+    <p class="desc">Please register by phone number or email</p>
+
+    <form id="registerForm">
+      <label>Phone number</label>
+      <input type="text" placeholder="+91 Please enter the phone number" required />
+
+      <label>Set password</label>
+      <input type="password" placeholder="Set password" required />
+
+      <label>Confirm password</label>
+      <input type="password" placeholder="Confirm password" required />
+
+      <label>Invite code</label>
+      <input type="text" value="13413405256" />
+
+      <div class="checkbox">
+        <input type="checkbox" required />
+        <span>I have read and agree <a href="#">[Privacy Agreement]</a></span>
+      </div>
+
+      <button type="submit">Register</button>
+    </form>
+
+    <div class="login-link">
+      Already have an account? <a href="login.html">Login</a>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      window.location.href = 'home.html'; // after register redirect to home
+    });
+  </script>
+</body>
+</html>
