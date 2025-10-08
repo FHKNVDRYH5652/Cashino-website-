@@ -1,460 +1,498 @@
-<!DOCTYPE html>
+  <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>TashanWin • WinGo (Offline Working)</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RATAN WIN - WinGo</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0f1218; --panel:#171b23; --muted:#202635; --ink:#e8e9ef; --sub:#cfd2db;
-    --orange:#f5a524; --green:#22c55e; --red:#ef4444; --violet:#8b5cf6; --blue:#4e95ff;
-    --chip-shadow: inset 0 8px 12px rgba(255,255,255,.12), inset 0 -12px 18px rgba(0,0,0,.35), 0 8px 16px rgba(0,0,0,.35);
-    --radius:16px;
+    --bg:#111214; --panel:#1b1c20; --panel2:#23252b; --gold:#f59e0b; --gold2:#ffb321;
+    --green:#22c55e; --red:#ef4444; --violet:#8b5cf6; --text:#e5e7eb;
   }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-  .wrap{max-width:1100px;margin:0 auto;padding:14px 12px 120px}
-  /* Wallet + Banner */
-  .walletCard{background:linear-gradient(180deg,#21283a,#1a1f2e);border:1px solid #2a3042;border-radius:14px;padding:16px;display:flex;gap:12px;align-items:center;box-shadow:0 12px 30px rgba(0,0,0,.35)}
-  .wLeft{flex:1}
-  .wb{font-size:14px;opacity:.85}
-  .wa{font-size:28px;font-weight:800}
-  .btn{border:none;border-radius:12px;padding:10px 16px;font-weight:800;cursor:pointer}
-  .btn.withdraw{background:#ef4444;color:#fff}
-  .btn.deposit{background:#22c55e;color:#082213}
-  .banner{margin-top:12px;background:linear-gradient(90deg,#2a2f3a,#202534);border:1px solid #2f3445;border-radius:14px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
-  .detail{background:linear-gradient(180deg,#f7c56a,#f39e1f);color:#1a1203;border:none;border-radius:20px;padding:10px 16px;font-weight:800}
-  /* Modes */
-  .modes{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
-  .mode{background:#262a35;border:2px solid #333a4f;border-radius:16px;padding:12px;text-align:center;color:#cfd6e8;cursor:pointer;font-weight:800}
-  .mode.active{background:linear-gradient(180deg,#ffd89b,#ffbd59);border-color:#ffdfae;color:#251604;box-shadow:0 10px 28px rgba(0,0,0,.35)}
-  /* Main row */
-  .row{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:14px}
-  .card{background:var(--panel);border-radius:16px;border:1px solid #2a3042;box-shadow:0 10px 28px rgba(0,0,0,.35)}
-  .timerBox{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px dashed #2d344b}
-  .tLeft{padding:14px}
-  .how{display:inline-flex;align-items:center;gap:8px;border:1px solid #3a4057;border-radius:30px;padding:10px 14px;background:#141823}
-  .tRight{padding:14px;text-align:right}
-  .remain{font-size:12px;opacity:.85}
-  .digits{display:inline-flex;gap:6px;margin-top:6px}
-  .seg{background:#0c1019;border:2px solid #1f2433;border-radius:8px;padding:8px 10px;font-weight:800;font-size:28px;min-width:40px;text-align:center;box-shadow:inset 0 -6px 10px rgba(0,0,0,.25)}
-  .period{margin-top:4px;opacity:.8}
-  /* Bet options */
-  .colorBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px}
-  .cbtn{height:56px;border-radius:14px;font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 14px rgba(0,0,0,.25)}
-  .cbtn.g{background:#17b455;color:#041e12}
-  .cbtn.v{background:#7a66f6;color:#fff}
-  .cbtn.r{background:#ee4545;color:#2a0a0a}
-  .chipGrid{padding:0 16px 16px; display:grid;grid-template-columns:repeat(5,1fr);gap:12px;justify-items:center}
-  .chip{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:22px;cursor:pointer;box-shadow:var(--chip-shadow);color:#17202b}
-  .chip.r{background:radial-gradient(circle at 30% 30%,#ffb3b9,#ff6b72 55%,#b8242f)}
-  .chip.g{background:radial-gradient(circle at 30% 30%,#b6f7c4,#51e084 55%,#148f3d)}
-  .chip.v{background:radial-gradient(circle at 30% 30%,#dfd2ff,#b79cff 55%,#5b39b7);color:#fff}
-  .multRow{display:flex;align-items:center;gap:10px;border-top:1px dashed #2d3348;padding:14px 16px}
-  .rnd{border:2px solid #8b2c2c;color:#e26d6d;background:transparent;padding:10px 16px;border-radius:12px;font-weight:800;cursor:pointer}
-  .mult{display:flex;gap:8px;flex-wrap:wrap}
-  .pill{border-radius:12px;padding:10px 14px;background:#1a1f2c;border:1px solid #2f3650;cursor:pointer;font-weight:800}
-  .pill.sel{background:#10b981;color:#04160f;border-color:#0e9f6e}
-  .bigSmall{display:flex;gap:10px;padding:0 16px 16px}
-  .bs{flex:1;border:none;border-radius:26px;padding:16px 18px;font-weight:900;font-size:22px;cursor:pointer}
-  .bs.big{background:#f4a31a;color:#1d1203}
-  .bs.small{background:#4e95ff;color:#071320}
-  /* History */
-  .hWrap{padding:16px}
-  .hTitle{font-weight:800;margin-bottom:12px}
-  .hTable{border-radius:16px;overflow:hidden;border:1px solid #2a3042}
-  table{width:100%;border-collapse:collapse}
-  thead th{background:#201a12;color:#f9d195;padding:12px 14px;text-align:left}
-  tbody td{padding:12px 14px;border-top:1px solid #252a3b}
-  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
-  .dot.r{background:#ef4444} .dot.g{background:#22c55e} .dot.v{background:#8b5cf6}
-  .pager{display:flex;justify-content:flex-end;align-items:center;gap:12px;padding:12px}
-  .pgBtn{background:#1a1f2c;border:1px solid #2f3650;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
-  /* Drawer */
-  .drawer{position:fixed;left:0;right:0;bottom:-100%;background:linear-gradient(180deg,#121622,#0a0f1b);border-top-left-radius:22px;border-top-right-radius:22px;border-top:1px solid #222a3c;transition:bottom .35s;z-index:40}
-  .drawer.open{bottom:0}
-  .dHead{display:flex;justify-content:center;align-items:center;padding:14px}
-  .tag{padding:8px 14px;border-radius:10px;font-weight:900}
-  .tag.orange{background:#ffedd5;color:#8a3a0a}
-  .tag.blue{background:#dbeafe;color:#1e40af}
-  .tag.num{background:#f1f5f9;color:#0f172a}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}
-  .box{background:#0c111a;border:1px solid #223047;border-radius:14px;padding:12px}
-  .row{display:flex;gap:8px;flex-wrap:wrap}
-  .mini{background:#0f1420;border:1px solid #27334d;border-radius:10px;padding:8px 12px;cursor:pointer}
-  .mini.active{outline:2px solid #ffffff22}
-  .qtybox{display:flex;align-items:center;gap:10px}
-  .qtybox input{width:100%;background:#0e1420;border:1px solid #27334d;border-radius:10px;padding:10px;color:#fff;font-size:16px}
-  .square{width:42px;height:42px;display:grid;place-items:center;background:#0e1420;border:1px solid #27334d;border-radius:10px;cursor:pointer}
-  .cta{position:sticky;bottom:0;background:#0a0f1a;border-top:1px solid #20283a;padding:12px}
-  .cta button{width:100%;padding:14px;border-radius:12px;background:#4e95ff;border:none;font-weight:800;font-size:16px;color:#fff;cursor:pointer}
-  .muted{opacity:.8;font-size:12px}
-  /* Toast */
-  .toast{position:fixed;left:50%;transform:translateX(-50%);top:20px;background:#000a;border-radius:10px;padding:10px 16px;color:#fff;opacity:0;pointer-events:none;transition:all .25s;z-index:70}
-  .toast.show{opacity:1;transform:translate(-50%,0)}
-  /* Result popup */
-  .popup{position:fixed;left:50%;top:50%;transform:translate(-50%,-60%) scale(.98);opacity:0;pointer-events:none;transition:all .25s;z-index:60}
-  .popup.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
-  .panel{width:min(520px,94vw);background:linear-gradient(180deg,#fff,#f8f8fb);border-radius:24px;box-shadow:0 40px 80px rgba(0,0,0,.35);padding:18px 18px 10px;color:#1f2937;position:relative}
-  .panel.win{background:linear-gradient(180deg,#fff7eb,#ffedd5)}
-  .panel.lose{background:linear-gradient(180deg,#eff6ff,#f8fafc)}
-  .badge{position:absolute;left:50%;top:-38px;transform:translateX(-50%);width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:#ffedd5;border:6px solid #fff;box-shadow:0 10px 30px rgba(0,0,0,.25)}
-  .badge.lose{background:#e5e7eb}
-  .bigtitle{font-size:28px;font-weight:800;text-align:center;margin-top:8px}
-  .roll{margin:12px auto 0;background:#fff;border-radius:14px;padding:12px 16px;font-weight:800;box-shadow:inset 0 -6px 12px rgba(0,0,0,.06);text-align:center}
-  .sub{font-size:13px;text-align:center;opacity:.8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Poppins,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  header{background:#17181b;padding:10px 14px;display:flex;align-items:center;justify-content:center;
+         position:sticky;top:0;z-index:10;border-bottom:1px solid #2a2d34}
+  .brand{font-weight:800; letter-spacing:.5px;}
+  .brand .a{background:linear-gradient(90deg,#ff7e22,#25b63c);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .wallet{margin:12px;background:linear-gradient(180deg,#2b2d33,#23252b);border-radius:14px;padding:16px;
+          display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .btn{border:none;border-radius:26px;padding:10px 16px;font-weight:700;cursor:pointer}
+  .btn-red{background:#ef4444;color:white}.btn-green{background:#22c55e;color:white}
+  .banner{margin:12px;background:#151515;border:1px solid #3a2b05;color:#f8e4b0;border-radius:12px;padding:12px}
+  .variants{margin:12px;display:flex;gap:10px}
+  .chip{flex:1;padding:12px;border-radius:14px;text-align:center;background:#2a2d34;cursor:pointer;border:1px solid transparent;font-weight:600}
+  .chip.active{background:linear-gradient(180deg,#ffdd9a,#f3b13a);color:#111;border-color:#f59e0b}
+  .panel{margin:12px;background:var(--panel);border-radius:16px;padding:12px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .timer{font-family:monospace;font-size:26px;background:#0f0f11;padding:8px 12px;border-radius:8px;letter-spacing:1px}
+  .color-tabs{display:flex;gap:10px;margin:12px}
+  .color-tabs .tab{flex:1;padding:12px;text-align:center;border-radius:10px;font-weight:700;cursor:pointer;background:#2a2d34}
+  .tab.green{background:#184a2d;color:#9bf6bc}
+  .tab.violet{background:#2b214f;color:#c7b8ff}
+  .tab.red{background:#4a1b1b;color:#ffb4b4}
+  .nums{margin:12px;background:#141519;border-radius:16px;padding:12px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .ball{aspect-ratio:1/1;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:20px;cursor:pointer;border:3px solid rgba(255,255,255,.06);box-shadow:inset 0 6px 14px rgba(0,0,0,.6)}
+  .ball.red{background:radial-gradient(circle at 30% 30%,#ffb3b3,#ef4444 60%, #991b1b)}
+  .ball.green{background:radial-gradient(circle at 30% 30%,#b8ffd2,#22c55e 60%, #14532d)}
+  .ball.mix0{background:radial-gradient(circle at 30% 30%,#e9c7ff,#a855f7 40%, #ef4444)}
+  .ball.mix5{background:radial-gradient(circle at 30% 30%,#e9c7ff,#22c55e 40%, #a855f7)}
+  .stakebar{margin:12px;display:flex;gap:10px;flex-wrap:wrap}
+  .tag{padding:8px 12px;border-radius:999px;background:#26282f;border:1px solid #3a3d45;cursor:pointer;font-weight:600}
+  .tag.active{background:#1f8b45;border-color:#2dd26f}
+  .bigsmall{margin:12px;display:flex;gap:10px}
+  .big,.small{flex:1;padding:14px;border-radius:50px;font-weight:800;cursor:pointer;text-align:center}
+  .big{background:linear-gradient(180deg,#ffdd9a,#f3b13a);color:#111}
+  .small{background:#3b82f6}
+  .tabs2{display:flex;gap:10px;margin:12px}
+  .tabs2 .t{flex:1;padding:12px;text-align:center;border-radius:12px;background:#2a2d34;font-weight:700;cursor:pointer}
+  .tabs2 .t.active{background:linear-gradient(180deg,#ffdd9a,#f3b13a);color:#111}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{padding:10px 8px;border-bottom:1px solid #2c2f36;text-align:left}
+  th{background:#3a2d11;color:#ffe0a6;position:sticky;top:0}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%}.dot.red{background:#ef4444}.dot.green{background:#22c55e}.dot.violet{background:#8b5cf6}
+  .pager{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px}.pagebtn{padding:10px 14px;border-radius:10px;background:#2a2d34;cursor:pointer}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18%;padding:16px 18px;border-radius:18px;display:none;z-index:30}
+  #betSuccess{background:rgba(0,0,0,.7);color:#fff;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(2px)}
+  #winToast{background:linear-gradient(180deg,#ffb84d,#ff8c1a);color:#111;border:2px solid #fff;box-shadow:0 8px 30px rgba(255,140,26,.45)}
+  #winToast .rocket{width:20px;height:20px;margin-right:8px;vertical-align:middle}
+  #loseToast{background:linear-gradient(180deg,#eef2f7,#cdd4dd);color:#111;border:2px solid #d1d5db;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;z-index:25}
+  .sheet{width:100%;background:#1b1c20;border-top-left-radius:18px;border-top-right-radius:18px;padding:16px}
+  .sheet.blue{border-top:6px solid #3b82f6}.sheet.orange{border-top:6px solid #f59e0b}
+  .rowx{display:flex;align-items:center;gap:10px;margin:12px 0}
+  .qty{display:flex;align-items:center;gap:8px}
+  .qty input{width:80px;text-align:center;padding:10px;border-radius:8px;border:none;background:#0f0f12;color:#fff;font-weight:700}
+  .chipx{padding:8px 12px;border-radius:10px;background:#2a2d34;cursor:pointer}
+  .agree{display:flex;align-items:center;gap:8px;margin:10px 0}
+  .actions{display:flex;gap:10px}.btn-ghost{flex:1;background:#2a2d34;color:#ddd}.btn-primary{flex:2;background:#3b82f6;color:#fff}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="walletCard">
-    <div class="wLeft">
-      <div class="wb">Wallet balance</div>
-      <div class="wa" id="walletAmt">₹0.00</div>
-    </div>
-    <div>
-      <button class="btn withdraw">Withdraw</button>
-      <button class="btn deposit" id="add100">Deposit</button>
-    </div>
-  </div>
+<header><div class="brand"><span class="a">RATAN WIN</span></div></header>
 
-  <div class="banner">
-    <div class="left"><span>🔊</span><div>Welcome to TASHANWIN game platform, we will serve you wholeheartedly!</div></div>
-    <button class="detail">Detail</button>
+<section class="wallet">
+  <div>
+    <div style="opacity:.9">Wallet balance</div>
+    <div id="balance" style="font-size:26px;font-weight:800">₹0.00</div>
   </div>
-
-  <div class="modes" id="modeTabs">
-    <div class="mode active" data-mode="30s"><small>WinGo</small><div>30sec</div></div>
-    <div class="mode" data-mode="1m"><small>WinGo</small><div>1 Min</div></div>
-    <div class="mode" data-mode="3m"><small>WinGo</small><div>3 Min</div></div>
-    <div class="mode" data-mode="5m"><small>WinGo</small><div>5 Min</div></div>
+  <div style="display:flex; gap:8px">
+    <button class="btn btn-red" onclick="alert('Withdraw flow TBD')">Withdraw</button>
+    <button class="btn btn-green" onclick="alert('Deposit flow TBD')">Deposit</button>
   </div>
+</section>
 
+<div class="banner">Welcome to RATAN WIN game platform, we will serve you wholeheartedly!</div>
+
+<div class="variants">
+  <div class="chip active" data-variant="30">WinGo 30sec</div>
+  <div class="chip" data-variant="60">WinGo 1 Min</div>
+  <div class="chip" data-variant="180">WinGo 3 Min</div>
+  <div class="chip" data-variant="300">WinGo 5 Min</div>
+</div>
+
+<section class="panel">
   <div class="row">
-    <div class="card">
-      <div class="timerBox">
-        <div class="tLeft">
-          <div class="how">💬 How to play</div>
-          <div style="margin-top:8px;opacity:.85">WinGo <span id="modeLabel">30sec</span></div>
-        </div>
-        <div class="tRight">
-          <div class="remain">Time remaining</div>
-          <div class="digits" id="digits"><div class="seg">0</div><div class="seg">0</div><div class="seg">:</div><div class="seg">3</div><div class="seg">0</div><div class="seg"> sec</div></div>
-          <div class="period" id="periodId">—</div>
-        </div>
-      </div>
+    <div style="font-weight:700">WinGo <span id="vlabel">30sec</span></div>
+    <div class="row" style="gap:8px">
+      <div>Time remaining</div>
+      <div id="count" class="timer">00:30 sec</div>
+    </div>
+  </div>
+  <div class="row">
+    <div>Period</div>
+    <div id="period" style="font-family:monospace"></div>
+  </div>
+</section>
 
-      <div class="colorBtns">
-        <div class="cbtn g" data-bet="GREEN">Green</div>
-        <div class="cbtn v" data-bet="VIOLET">Violet</div>
-        <div class="cbtn r" data-bet="RED">Red</div>
-      </div>
+<div class="color-tabs">
+  <div class="tab green" onclick="openBet('COLOR','Green')">Green</div>
+  <div class="tab violet" onclick="openBet('COLOR','Violet')">Violet</div>
+  <div class="tab red" onclick="openBet('COLOR','Red')">Red</div>
+</div>
 
-      <div class="chipGrid">
-        <div class="chip v" data-num="0">0</div>
-        <div class="chip g" data-num="1">1</div>
-        <div class="chip r" data-num="2">2</div>
-        <div class="chip g" data-num="3">3</div>
-        <div class="chip r" data-num="4">4</div>
-        <div class="chip v" data-num="5">5</div>
-        <div class="chip r" data-num="6">6</div>
-        <div class="chip g" data-num="7">7</div>
-        <div class="chip r" data-num="8">8</div>
-        <div class="chip g" data-num="9">9</div>
-      </div>
+<div class="nums" id="nums"></div>
 
-      <div class="multRow">
-        <button class="rnd" id="randomBtn">Random</button>
-        <div class="mult" id="multBtns">
-          <div class="pill sel" data-m="1">X1</div>
-          <div class="pill" data-m="5">X5</div>
-          <div class="pill" data-m="10">X10</div>
-          <div class="pill" data-m="20">X20</div>
-          <div class="pill" data-m="50">X50</div>
-          <div class="pill" data-m="100">X100</div>
-        </div>
-      </div>
+<div class="stakebar">
+  <div class="tag" data-m="RANDOM">Random</div>
+  <div class="tag active" data-m="1">X1</div>
+  <div class="tag" data-m="5">X5</div>
+  <div class="tag" data-m="10">X10</div>
+  <div class="tag" data-m="20">X20</div>
+  <div class="tag" data-m="50">X50</div>
+  <div class="tag" data-m="100">X100</div>
+</div>
 
-      <div class="bigSmall">
-        <button class="bs big" data-bet="BIG">Big</button>
-        <button class="bs small" data-bet="SMALL">Small</button>
+<div class="bigsmall">
+  <div class="big" onclick="openBet('BS','Big')">Big</div>
+  <div class="small" onclick="openBet('BS','Small')">Small</div>
+</div>
+
+<div class="tabs2">
+  <div class="t active">Game history</div>
+  <div class="t">Chart</div>
+  <div class="t">Follow Strategy</div>
+</div>
+
+<section class="panel">
+  <table id="history">
+    <thead>
+      <tr><th>Period</th><th>Number</th><th>Big Small</th><th>Color</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div class="pager">
+    <div class="pagebtn" onclick="prevPage()">&lt;</div>
+    <div id="pageno">1/50</div>
+    <div class="pagebtn" onclick="nextPage()">&gt;</div>
+  </div>
+</section>
+
+<!-- Bet Modal -->
+<div class="modal" id="betModal">
+  <div class="sheet" id="sheet">
+    <h3 id="betTitle">WinGo 30sec</h3>
+    <div id="betSelection" style="margin-top:8px;font-weight:700"></div>
+    <div class="rowx">
+      <div style="min-width:80px">Balance</div>
+      <div class="chipx" onclick="qtyMultiply(1)">1</div>
+      <div class="chipx" onclick="qtyMultiply(10)">10</div>
+      <div class="chipx" onclick="qtyMultiply(100)">100</div>
+      <div class="chipx" onclick="qtyMultiply(1000)">1000</div>
+    </div>
+    <div class="rowx">
+      <div style="min-width:80px">Quantity</div>
+      <div class="qty">
+        <button class="chipx" onclick="chgQty(-1)">-</button>
+        <input id="qty" type="number" value="1" min="1">
+        <button class="chipx" onclick="chgQty(1)">+</button>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <div class="chipx" onclick="setX(1)">X1</div>
+        <div class="chipx" onclick="setX(5)">X5</div>
+        <div class="chipx" onclick="setX(10)">X10</div>
+        <div class="chipx" onclick="setX(20)">X20</div>
+        <div class="chipx" onclick="setX(50)">X50</div>
+        <div class="chipx" onclick="setX(100)">X100</div>
       </div>
     </div>
-
-    <div class="card">
-      <div class="hWrap">
-        <div class="hTitle">Game history</div>
-        <div class="hTable">
-          <table>
-            <thead><tr><th style="width:36%">Period</th><th style="width:14%">Number</th><th style="width:18%">Big Small</th><th>Color</th></tr></thead>
-            <tbody id="historyBody"></tbody>
-          </table>
-        </div>
-        <div class="pager">
-          <button class="pgBtn" id="prevPage">◀</button>
-          <div id="pageLabel">1/50</div>
-          <button class="pgBtn" id="nextPage">▶</button>
-        </div>
-      </div>
+    <div class="agree"><input id="agree" type="checkbox" checked> <label for="agree">I agree <span style="color:#f87171">《Pre-sale rules》</span></label></div>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="closeBet()">Cancel</button>
+      <button class="btn btn-primary" id="placeBtn" onclick="placeBet()">Total amount ₹<span id="amount">1.00</span></button>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast">Bet Successful</div>
-
-<!-- Drawer -->
-<div class="drawer" id="drawer">
-  <div class="dHead"><div class="tag num" id="drawerTag">Select</div></div>
-  <div class="grid">
-    <div class="box">
-      <div style="font-weight:800;margin-bottom:8px">Balance</div>
-      <div class="row" id="balancePresets">
-        <div class="mini" data-p="1">1</div>
-        <div class="mini" data-p="10">10</div>
-        <div class="mini" data-p="100">100</div>
-        <div class="mini" data-p="1000">1000</div>
-      </div>
-      <div class="muted">Upper balance buttons <b>quantity ko multiply</b> karte hain.</div>
-    </div>
-    <div class="box">
-      <div style="font-weight:800;margin-bottom:8px">Quantity</div>
-      <div class="qtybox">
-        <div class="square" id="minus">-</div>
-        <input id="qty" type="number" min="1" value="1" />
-        <div class="square" id="plus">+</div>
-      </div>
-    </div>
-    <div class="box">
-      <div style="font-weight:800;margin-bottom:8px">Multiply (Total amount only)</div>
-      <div class="row" id="amountMult">
-        <div class="mini active" data-m="1">X1</div>
-        <div class="mini" data-m="5">X5</div>
-        <div class="mini" data-m="10">X10</div>
-        <div class="mini" data-m="20">X20</div>
-        <div class="mini" data-m="50">X50</div>
-        <div class="mini" data-m="100">X100</div>
-      </div>
-      <div class="muted">Neeche ke multipliers sirf <b>Total amount</b> par apply hote hain.</div>
-    </div>
-    <div class="box">
-      <div style="font-weight:800;margin-bottom:8px">Summary</div>
-      <div class="muted" id="summaryLine">Qty 1 × X1 = ₹1</div>
-    </div>
+<!-- Popups -->
+<div class="toast" id="betSuccess">✔ Bet Successful</div>
+<div class="toast" id="winToast">
+  <div style="display:flex;align-items:center;font-weight:800;font-size:18px">
+    <svg class="rocket" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c3 0 7 3 9 5-1 2-4 6-7 7-1 3-5 6-7 7 2-2 1-5 1-5l-5-1s3-4 6-5c1-3 5-6 7-8z"/></svg>
+    Congratulations
   </div>
-  <div class="cta"><button id="placeBetBtn">Total amount ₹<span id="totalAmt">1</span></button></div>
+  <div>Bonus: ₹<span id="winAmt">0.00</span></div>
+  <div style="opacity:.7;margin-top:6px">3 seconds auto close</div>
+</div>
+<div class="toast" id="loseToast">
+  <div style="display:flex;align-items:center;font-weight:800;font-size:18px">
+    <svg class="rocket" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c3 0 7 3 9 5-1 2-4 6-7 7-1 3-5 6-7 7 2-2 1-5 1-5l-5-1s3-4 6-5c1-3 5-6 7-8z"/></svg>
+    Sorry
+  </div>
+  <div>Lose</div>
+  <div style="opacity:.7;margin-top:6px">3 seconds auto close</div>
 </div>
 
-<!-- Result popup -->
-<div class="popup" id="resultPopup">
-  <div class="panel" id="resultPanel">
-    <div class="badge" id="badge">🚀</div>
-    <div class="bigtitle" id="resultTitle">Congratulations</div>
-    <div class="roll" id="resultRoll">Lottery results —</div>
-    <div class="bigtitle" id="resultAmount">Bonus ₹0.00</div>
-    <div class="sub" id="resultPeriod">Period —</div>
-    <div class="sub">3 seconds auto close</div>
-  </div>
-</div>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
 
 <script>
-  // ----- Utilities -----
-  const pad = n => n.toString().padStart(2,"0");
-  const fmtINR = n => "₹"+(n||0).toFixed(2);
-  const modes = { "30s":30, "1m":60, "3m":180, "5m":300 };
-  let currentMode = "30s";
-  let qty=1, amountMult=1, activeBet=null;
-  const digits = document.getElementById("digits");
-  const periodIdEl = document.getElementById("periodId");
-  const modeLabel = document.getElementById("modeLabel");
-  const walletAmtEl = document.getElementById("walletAmt");
-  const toast = document.getElementById("toast");
-  const historyBody = document.getElementById("historyBody");
-  const pageLabel = document.getElementById("pageLabel");
-  const prevPage = document.getElementById("prevPage");
-  const nextPage = document.getElementById("nextPage");
+// ================== CONFIG & STATE ==================
+// Use your existing project (kept from your earlier file so it's plug & play)
+const firebaseConfig = {
+  apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
+  authDomain: "terminal-xxrr.firebaseapp.com",
+  databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "terminal-xxrr",
+  storageBucket: "terminal-xxrr.firebasestorage.app",
+  messagingSenderId: "722753278120",
+  appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
+  measurementId: "G-E3MZH3E1K5"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-  // Local storage keys
-  const K_WALLET = "wingo_wallet";
-  const K_HISTORY = "wingo_hist_"; // per mode
-  const K_BET = "wingo_bet_"; // pending bet per mode+period
+// Variants meta: each variant has its own synced anchor (startTs + periodStart)
+const VARIANTS = { 30: true, 60: true, 180: true, 300: true };
 
-  function now(){ return Date.now(); }
+// Your fixed starting period number:
+const FIXED_START_PERIOD = 2025091000010250;
 
-  function periodInfo(mode){
-    const iv = modes[mode];
-    const t = Math.floor(now()/1000);
-    const next = Math.floor((t+iv)/iv)*iv;
-    const remain = next - t;
-    const d = new Date(next*1000);
-    const id = d.getFullYear().toString()+pad(d.getMonth()+1)+pad(d.getDate())+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds());
-    return { iv, remain, id };
+// UI / State
+let variant = 30;            // seconds
+let xMult = 1;               // bottom X multiplier for total
+let pendingBet = null;       // {period,type,value,stake}
+let page = 1;
+const PAGE_SIZE = 10, MAX_PAGES = 50;
+let tickTimer = null;
+let meta = null;             // {startTs:number, periodStart:number, sec:number}
+let lastPeriodStr = "";      // track last displayed period to handle resolution once
+
+// ================== WALLET ==================
+function loadWallet(){
+  let w = parseFloat(localStorage.getItem('wallet')||'0');
+  if(!w || isNaN(w)){ w = 100; localStorage.setItem('wallet', w.toFixed(2)); }
+  updateBalance(w);
+}
+function updateBalance(v){
+  localStorage.setItem('wallet', (+v).toFixed(2));
+  document.getElementById('balance').textContent = '₹' + (+v).toFixed(2);
+}
+loadWallet();
+
+// ================== UI BUILDERS ==================
+const numsEl = document.getElementById('nums');
+const numColor = (n)=>{
+  if(n===0) return 'mix0'; if(n===5) return 'mix5';
+  return [1,3,7,9].includes(n) ? 'green' : 'red';
+};
+for(let n=0;n<=9;n++){
+  const d = document.createElement('div');
+  d.className = 'ball ' + (n===0?'mix0': n===5?'mix5': numColor(n));
+  d.textContent = n;
+  d.onclick = ()=>openBet('NUM', n);
+  numsEl.appendChild(d);
+}
+
+// Variant switching
+document.querySelectorAll('.chip').forEach(ch=>{
+  ch.onclick = ()=>{
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    ch.classList.add('active');
+    variant = +ch.dataset.variant;
+    document.getElementById('vlabel').textContent = (variant===30?'30sec':variant===60?'1 Min':variant===180?'3 Min':'5 Min');
+    document.getElementById('betTitle').textContent = `WinGo ${document.getElementById('vlabel').textContent}`;
+    startSyncedSchedule(); // restart with new variant
   }
+});
 
-  function renderDigits(rem, iv){
-    const mm = pad(Math.floor(rem/60));
-    const ss = pad(rem%60);
-    const unit = iv>=60 ? "min" : "sec";
-    digits.innerHTML = \`<div class="seg">\${mm[0]}</div><div class="seg">\${mm[1]}</div><div class="seg">:</div><div class="seg">\${ss[0]}</div><div class="seg">\${ss[1]}</div><div class="seg"> \${unit}</div>\`;
-  }
-
-  function colorOf(n){
-    if(n===0) return ["VIOLET"];
-    if(n===5) return ["GREEN","VIOLET"];
-    if([2,4,6,8].includes(n)) return ["RED"];
-    return ["GREEN"];
-  }
-  const bigSmallOf = n => n>=5?"BIG":"SMALL";
-
-  // Wallet
-  function loadWallet(){
-    let w = Number(localStorage.getItem(K_WALLET));
-    if(!w && w!==0){ w = 100; localStorage.setItem(K_WALLET, w); }
-    walletAmtEl.textContent = fmtINR(w);
-  }
-  function addWallet(delta){
-    let w = Number(localStorage.getItem(K_WALLET)||0);
-    w += delta;
-    if(w<0) w = 0;
-    localStorage.setItem(K_WALLET, w);
-    walletAmtEl.textContent = fmtINR(w);
-  }
-  loadWallet();
-  document.getElementById("add100").onclick = ()=> addWallet(100);
-
-  // Toast
-  function showToast(msg){ toast.textContent = msg; toast.classList.add("show"); setTimeout(()=> toast.classList.remove("show"), 1400); }
-
-  // Drawer logic
-  const drawer = document.getElementById("drawer"), drawerTag=document.getElementById("drawerTag");
-  const qtyInput = document.getElementById("qty");
-  const totalAmt = document.getElementById("totalAmt");
-  const summaryLine = document.getElementById("summaryLine");
-  document.getElementById("minus").onclick=()=>{ qty=Math.max(1,(parseInt(qty)||1)-1); qtyInput.value=qty; updTot(); };
-  document.getElementById("plus").onclick =()=>{ qty=(parseInt(qty)||1)+1; qtyInput.value=qty; updTot(); };
-  qtyInput.addEventListener("input",()=>{ qty=Math.max(1,parseInt(qtyInput.value||'1')); updTot(); });
-  document.querySelectorAll("#balancePresets .mini").forEach(x=> x.onclick=()=>{ qty=(parseInt(qty)||1)*(parseInt(x.dataset.p)); qtyInput.value=qty; highlight(x,"#balancePresets"); updTot();});
-  document.querySelectorAll("#amountMult .mini").forEach(x=> x.onclick=()=>{ amountMult=parseInt(x.dataset.m); highlight(x,"#amountMult"); updTot();});
-  function highlight(el,scope){ document.querySelectorAll(scope+" .mini").forEach(y=>y.classList.remove("active")); el.classList.add("active"); }
-  function updTot(){ totalAmt.textContent = qty*amountMult; summaryLine.textContent = \`Qty \${qty} × X\${amountMult} = ₹\${qty*amountMult}\`; }
-
-  function openDrawerFrom(el){
-    let type="", tag="num", value=null, title="Select";
-    if(el.classList.contains("bs")){ type=el.dataset.bet; title = type==="BIG"?"Select Big":"Select Small"; tag = type==="BIG"?"orange":"blue"; }
-    else if(el.classList.contains("cbtn")){ type=el.dataset.bet; title="Select "+type[0]+type.slice(1).toLowerCase(); tag="num"; }
-    else if(el.classList.contains("chip")){ type="NUMBER"; value=parseInt(el.dataset.num); title="Select Number "+value; tag="num"; }
-    drawerTag.className="tag "+tag; drawerTag.textContent=title; activeBet={type,value}; drawer.classList.add("open");
-  }
-  function closeDrawer(){ drawer.classList.remove("open"); }
-  document.getElementById("placeBetBtn").onclick = ()=>{
-    const { id } = periodInfo(currentMode);
-    const amount = qty*amountMult;
-    const bet = { ...activeBet, amount, periodId:id, mode:currentMode, createdAt:Date.now() };
-    localStorage.setItem(K_BET+currentMode+id, JSON.stringify(bet));
-    showToast("Bet Successful");
-    closeDrawer();
+// Stake multiplier pills
+document.querySelectorAll('.tag[data-m]').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.tag[data-m]').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const m = t.dataset.m;
+    xMult = (m==='RANDOM') ? [1,5,10,20,50,100][Math.floor(Math.random()*6)] : +m;
+    refreshAmount();
   };
-  document.addEventListener("click",(e)=>{
-    if(drawer.classList.contains("open")){
-      const inside = e.target.closest(".drawer,.bs,.cbtn,.chip"); if(!inside) closeDrawer();
-    }
+});
+
+// ================== HELPERS ==================
+function pad2(n){ return String(n).padStart(2,'0'); }
+function formatMMSS(sec){
+  sec = Math.max(0, Math.ceil(sec));
+  const m = Math.floor(sec/60), s = sec%60;
+  return pad2(m)+":"+pad2(s)+" sec";
+}
+function getColors(n){
+  if(n===0) return ['Red','Violet'];
+  if(n===5) return ['Green','Violet'];
+  if([1,3,7,9].includes(n)) return ['Green'];
+  return ['Red'];
+}
+function showToast(id){
+  const t = document.getElementById(id);
+  t.style.display = 'block';
+  setTimeout(()=> t.style.display='none', 3000);
+}
+function refreshAmount(){
+  const q = +document.getElementById('qty').value || 1;
+  const total = q * xMult;
+  document.getElementById('amount').textContent = total.toFixed(2);
+}
+
+// ================== SYNCED SCHEDULE (ANCHOR + AUTO INCREMENT) ==================
+async function ensureMeta(){
+  const ref = db.ref(`wingo/${variant}/meta`);
+  // Transaction: set default anchor if missing
+  await ref.transaction(curr=>{
+    if(curr) return curr;
+    // New anchor: start now, with fixed starting period
+    return { startTs: Date.now(), periodStart: FIXED_START_PERIOD, sec: variant };
   });
+  const snap = await ref.get();
+  meta = snap.val();
+}
 
-  // Bind clicks
-  document.querySelectorAll(".bs,.cbtn,.chip").forEach(el=> el.addEventListener("click",()=> openDrawerFrom(el)));
+function computeCurrentPeriodAndRemain(){
+  const now = Date.now();
+  const elapsedMs = now - meta.startTs;
+  const cycle = meta.sec * 1000;
+  const idx = Math.floor(elapsedMs / cycle);
+  const remainMs = cycle - (elapsedMs % cycle);
+  const currentPeriod = meta.periodStart + idx; // ✅ auto-incrementing period for all users
+  return { currentPeriod, remainSec: Math.ceil(remainMs/1000) };
+}
 
-  // Modes
-  document.querySelectorAll(".mode").forEach(el=> el.onclick=()=>{
-    document.querySelectorAll(".mode").forEach(x=>x.classList.remove("active")); el.classList.add("active");
-    currentMode = el.dataset.mode; modeLabel.textContent = el.querySelector("div").textContent;
-    bindHistory(); // reload
-  });
+async function startSyncedSchedule(){
+  if(tickTimer) clearInterval(tickTimer);
+  await ensureMeta(); // make sure meta available
 
-  // History helpers
-  const ROWS = 10, PAGES = 50; let page=1, histCache=[];
-  function readHist(mode){
-    try{ return JSON.parse(localStorage.getItem(K_HISTORY+mode)||"[]"); }catch{ return []; }
-  }
-  function writeHist(mode, arr){
-    // Keep up to ROWS*PAGES newest
-    const keep = arr.slice(-ROWS*PAGES);
-    localStorage.setItem(K_HISTORY+mode, JSON.stringify(keep));
-  }
-  function renderPage(){
-    const start=(page-1)*ROWS, slice = histCache.slice().reverse().slice(start,start+ROWS);
-    historyBody.innerHTML = slice.map(r=>{
-      const dots = (r.colors||[]).map(c=>'<span class="dot '+({RED:'r',GREEN:'g',VIOLET:'v'}[c])+'"></span>').join("");
-      return `<tr><td>${r.id}</td><td style="font-weight:900">${r.num}</td><td>${r.bigSmall[0]+r.bigSmall.slice(1).toLowerCase()}</td><td>${dots}</td></tr>`;
-    }).join("");
-  }
-  function bindHistory(){
-    histCache = readHist(currentMode);
-    page=1; pageLabel.textContent = `${page}/${PAGES}`;
-    renderPage();
-  }
-  prevPage.onclick=()=>{ if(page>1){ page--; pageLabel.textContent=`${page}/${PAGES}`; renderPage(); } };
-  nextPage.onclick=()=>{ if(page<PAGES){ page++; pageLabel.textContent=`${page}/${PAGES}`; renderPage(); } };
-  bindHistory();
+  // initial load of history
+  await loadHistory();
 
-  // Settlement + popup
-  const popup = document.getElementById("resultPopup");
-  const panel = document.getElementById("resultPanel");
-  const resultTitle = document.getElementById("resultTitle");
-  const resultRoll = document.getElementById("resultRoll");
-  const resultAmount = document.getElementById("resultAmount");
-  const resultPeriod = document.getElementById("resultPeriod");
-  function showResult(win,res,mode,amount){
-    panel.className = "panel "+(win?"win":"lose");
-    resultTitle.textContent = win? "Congratulations":"Sorry";
-    const cols=(res.colors||[]).map(c=> c[0]+c.slice(1).toLowerCase()).join(" + ");
-    resultRoll.textContent = `Lottery results  ${cols}  ${res.num}  ${res.bigSmall[0]+res.bigSmall.slice(1).toLowerCase()}`;
-    resultAmount.textContent = win? `Bonus ${fmtINR(amount)}` : "Lose";
-    resultPeriod.textContent = `Period: WinGo ${mode}  •  ${res.id}`;
-    popup.classList.add("show"); setTimeout(()=> popup.classList.remove("show"), 3000);
-  }
+  tickTimer = setInterval(async ()=>{
+    const {currentPeriod, remainSec} = computeCurrentPeriodAndRemain();
+    document.getElementById('count').textContent = formatMMSS(remainSec);
+    document.getElementById('period').textContent = currentPeriod;
 
-  function settleIfAny(mode,id,res){
-    const key = K_BET+mode+id;
-    const raw = localStorage.getItem(key);
-    if(!raw) return;
-    localStorage.removeItem(key);
-    const bet = JSON.parse(raw);
-    let win=false, x=1.96;
-    if(bet.type==="BIG"||bet.type==="SMALL"){ win = res.bigSmall===bet.type; x=1.96; }
-    else if(bet.type==="NUMBER"){ win = res.num===bet.value; x=7.8; }
-    else if(["RED","GREEN","VIOLET"].includes(bet.type)){ win = (res.colors||[]).includes(bet.type); x=1.96; }
-    const amt = Number(bet.amount||0);
-    addWallet(-amt);
-    if(win) addWallet(amt*x);
-    showResult(win,res,mode, win? amt*x:0);
-  }
-
-  // Timer loop
-  let raf=null;
-  function loop(){
-    const {iv, remain, id} = periodInfo(currentMode);
-    renderDigits(remain, iv);
-    periodIdEl.textContent = id;
-    if(remain===0){
-      // Generate random result & store to history
-      const num = Math.floor(Math.random()*10);
-      const res = { id, num, bigSmall:bigSmallOf(num), colors:colorOf(num), at:Date.now() };
-      const arr = readHist(currentMode); arr.push(res); writeHist(currentMode, arr);
-      bindHistory();
-      // Settle any user bet for this period
-      settleIfAny(currentMode, id, res);
+    // On flip (when period changed) resolve previous and load history
+    if(lastPeriodStr === ""){
+      lastPeriodStr = String(currentPeriod);
     }
-    raf = requestAnimationFrame(loop);
-  }
-  loop();
+    if(String(currentPeriod) !== lastPeriodStr){
+      const prev = lastPeriodStr;
+      // Ensure a result exists for previous (first writer wins)
+      await ensureResult(prev);
+      // Resolve bet for that period
+      await resolveBet(prev);
+      // Refresh recent history
+      await loadHistory();
+      // Optionally ensure current period result stub (not needed, we generate on close)
+      lastPeriodStr = String(currentPeriod);
+    }
 
-  // Random picks
-  document.getElementById("randomBtn").onclick = ()=>{
-    const all = Array.from(document.querySelectorAll(".bs,.cbtn,.chip"));
-    const pick = all[Math.floor(Math.random()*all.length)];
-    openDrawerFrom(pick);
-  };
+    // When countdown hits zero, generate result for current period (first writer wins)
+    if(remainSec === 1){ // 1 sec left → next tick will flip; prepare result at boundary if not yet there
+      await ensureResult(currentPeriod);
+    }
+  }, 250);
+}
+
+// Ensure a single result per period across all users
+async function ensureResult(periodStr){
+  const ref = db.ref(`wingo/${variant}/results/${periodStr}`);
+  const snap = await ref.get();
+  if(snap.exists()) return;
+  // Use transaction to avoid race
+  await ref.transaction(curr=>{
+    if(curr) return curr;
+    const num = Math.floor(Math.random()*10);
+    const bs = (num>=5)?'Big':'Small';
+    const colors = getColors(num);
+    return { num, bs, colors, ts: Date.now() };
+  });
+}
+
+// Load latest history (50 rows max)
+async function loadHistory(){
+  const ref = db.ref(`wingo/${variant}/results`).limitToLast(PAGE_SIZE*5); // up to 50
+  const snap = await ref.get();
+  const rows = [];
+  snap.forEach(ch=> rows.push({period: ch.key, ...ch.val()}));
+  rows.sort((a,b)=> b.period.localeCompare(a.period)); // latest first
+  const tb = document.querySelector('#history tbody');
+  tb.innerHTML = '';
+  rows.slice(0,50).forEach(it=>{
+    const colorDots = it.colors.map(c=>`<span class="dot ${c.toLowerCase()}"></span>`).join(' ');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${it.period}</td>
+      <td style="font-weight:800;color:${[1,3,7,9].includes(it.num)?'#22c55e':(it.num===0||it.num===5?'#8b5cf6':'#ef4444')}">${it.num}</td>
+      <td>${it.bs}</td>
+      <td>${colorDots}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+// ================== BETTING ==================
+let betCtx = null; // {type:'BS'|'COLOR'|'NUM', value, theme}
+function openBet(type, value){
+  betCtx = {type, value, theme:'blue'};
+  const sheet = document.getElementById('sheet');
+  sheet.classList.remove('blue','orange');
+  if(type==='BS'){
+    sheet.classList.add(value==='Big'?'orange':'blue');
+    betCtx.theme = (value==='Big')?'orange':'blue';
+  }else if(type==='COLOR'){
+    sheet.classList.add(value==='Red'?'orange':'blue');
+    betCtx.theme = (value==='Red')?'orange':'blue';
+  }else{
+    sheet.classList.add([1,3,7,9].includes(value)?'blue':'orange');
+    betCtx.theme = ([1,3,7,9].includes(value)?'blue':'orange');
+  }
+  document.getElementById('betTitle').textContent = `WinGo ${variant===30?'30sec':variant===60?'1 Min':variant===180?'3 Min':'5 Min'}`;
+  document.getElementById('betSelection').textContent = (type==='NUM') ? `Select Number ${value}` : `Select ${value}`;
+  xMult = 1;
+  document.getElementById('qty').value = 1;
+  refreshAmount();
+  document.getElementById('betModal').style.display='flex';
+}
+function closeBet(){ document.getElementById('betModal').style.display='none'; }
+function chgQty(d){
+  const q = document.getElementById('qty');
+  let v = Math.max(1, (+q.value||1)+d);
+  q.value = v; refreshAmount();
+}
+function qtyMultiply(val){
+  const q = document.getElementById('qty');
+  q.value = Math.max(1, (+q.value||1) * val);
+  refreshAmount();
+}
+function setX(n){ xMult = n; refreshAmount(); }
+
+function placeBet(){
+  if(!document.getElementById('agree').checked){ alert('Please agree to rules'); return; }
+  if(!betCtx) return;
+  const total = +document.getElementById('amount').textContent;
+  let bal = parseFloat(localStorage.getItem('wallet')||'0');
+  if(bal < total){ alert('Insufficient balance'); return; }
+  // deduct now
+  bal -= total; updateBalance(bal);
+
+  // lock bet to the current synced period
+  const {currentPeriod} = computeCurrentPeriodAndRemain();
+  pendingBet = {period:String(currentPeriod), type:betCtx.type, value:betCtx.value, stake:total};
+  showToast('betSuccess');
+  closeBet();
+}
+
+// Resolve bet for a specific period using saved result
+async function resolveBet(periodStr){
+  if(!pendingBet || pendingBet.period !== String(periodStr)) return;
+  const ref = db.ref(`wingo/${variant}/results/${periodStr}`);
+  const snap = await ref.get();
+  if(!snap.exists()){ pendingBet = null; return; }
+  const res = snap.val(); // {num, bs, colors}
+  const win = checkWin(pendingBet, res);
+  if(win){
+    const rate = (pendingBet.type==='NUM') ? 7.8 : 1.96;
+    const prize = pendingBet.stake * rate;
+    const bal = parseFloat(localStorage.getItem('wallet')||'0') + prize;
+    updateBalance(bal);
+    document.getElementById('winAmt').textContent = prize.toFixed(2);
+    showToast('winToast');
+  }else{
+    showToast('loseToast');
+  }
+  pendingBet = null;
+}
+
+function checkWin(bet, res){
+  if(bet.type==='BS') return bet.value===res.bs;
+  if(bet.type==='COLOR') return res.colors.includes(bet.value);
+  if(bet.type==='NUM') return (+bet.value)===res.num;
+  return false;
+}
+
+// Pager placeholders (optional)
+function prevPage(){}
+function nextPage(){}
+
+// ================== BOOT ==================
+startSyncedSchedule();
 </script>
 </body>
 </html>
+               
