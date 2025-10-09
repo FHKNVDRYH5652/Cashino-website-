@@ -1,204 +1,167 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Deposit Page</title>
-  <style>
-    body {
-      background: #121212;
-      color: #f5f5f5;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      padding: 15px;
-      background: #1f1f1f;
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-      color: #ffcc00;
-    }
-    .wallet {
-      margin: 15px;
-      padding: 15px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #00c6ff, #0072ff);
-      color: white;
-      text-align: center;
-      font-size: 18px;
-    }
-    .method-box {
-      display: flex;
-      justify-content: space-around;
-      margin: 15px;
-    }
-    .method {
-      width: 120px;
-      height: 100px;
-      background: #222;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .method img {
-      width: 40px;
-      height: 40px;
-      margin-bottom: 8px;
-    }
-    .amounts {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin: 15px;
-    }
-    .amounts button {
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      background: #333;
-      color: #ffcc00;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .custom-amount {
-      margin: 15px;
-      padding: 10px;
-      width: calc(100% - 30px);
-      font-size: 16px;
-      border-radius: 6px;
-      border: none;
-      text-align: center;
-    }
-    .deposit-btn {
-      display: block;
-      margin: 15px auto;
-      padding: 12px 25px;
-      border: none;
-      border-radius: 8px;
-      background: #ffcc00;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 18px;
-    }
-    .history {
-      margin: 15px;
-      background: #1f1f1f;
-      border-radius: 8px;
-      padding: 10px;
-    }
-    .history h3 {
-      margin-top: 0;
-      color: #ffcc00;
-    }
-    .history-item {
-      border-bottom: 1px solid #333;
-      padding: 5px 0;
-      font-size: 14px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Deposit</title>
+<style>
+  body{background:#121212;color:#f5f5f5;font-family:Arial, sans-serif;margin:0}
+  header{padding:15px;background:#1f1f1f;text-align:center;font-size:20px;font-weight:700;color:#ffcc00}
+  .wallet{margin:15px;padding:15px;border-radius:8px;background:linear-gradient(135deg,#00c6ff,#0072ff);color:#fff;text-align:center;font-size:18px}
+  .method-box{display:flex;gap:12px;justify-content:space-around;margin:15px}
+  .method{flex:1;min-width:130px;height:100px;background:#222;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border:2px solid transparent}
+  .method.active{border-color:#ffcc00;background:#262626}
+  .method img{width:40px;height:40px;margin-bottom:8px;border-radius:50%}
+  .hint{text-align:center;margin:6px 0 0 0}
+  .amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px}
+  .amounts button{padding:10px;border:none;border-radius:8px;background:#333;color:#ffcc00;font-weight:700;cursor:pointer}
+  .custom-amount{margin:0 15px 10px 15px;padding:12px;width:calc(100% - 30px);font-size:16px;border-radius:8px;border:none;text-align:center}
+  .deposit-btn{display:block;margin:10px auto 15px auto;padding:12px 24px;border:none;border-radius:10px;background:#ffcc00;color:#000;font-weight:800;cursor:pointer;font-size:18px}
+  .history{margin:15px;background:#1f1f1f;border-radius:10px;padding:12px}
+  .history h3{margin:0 0 8px 0;color:#ffcc00}
+  .history-item{border-bottom:1px solid #2b2b2b;padding:8px 0;font-size:14px}
+  .history-item:last-child{border-bottom:none}
+  .status-pending{color:orange;font-weight:700}
+  .status-success{color:#4ade80;font-weight:700}
+</style>
 </head>
 <body>
-  <header>Deposit</header>
+<header>Deposit</header>
 
-  <div class="wallet">Wallet Balance: ₹<span id="walletBalance">0</span></div>
+<div class="wallet">Wallet Balance: ₹<span id="walletBalance">0.00</span></div>
 
-  <div class="method-box">
-    <div class="method" onclick="selectMethod('QR Pay')">
-      <img src="qrpay.png" alt="QR Pay">
-      <span>QR Pay</span>
-    </div>
-    <div class="method" onclick="selectMethod('Online Pay')">
-      <img src="online.png" alt="Online Pay">
-      <span>Online Pay</span>
-    </div>
+<div class="method-box">
+  <div class="method" id="mQR" onclick="selectMethod('QR Pay')">
+    <img src="qrpay.png" alt="QR Pay"/><span>QR Pay</span>
   </div>
-
-  <div style="text-align:center; margin:10px;">Recharge Method: <b id="methodText">Not selected</b></div>
-
-  <div class="amounts">
-    <button onclick="setAmount(200)">₹200</button>
-    <button onclick="setAmount(500)">₹500</button>
-    <button onclick="setAmount(1000)">₹1000</button>
-    <button onclick="setAmount(2000)">₹2000</button>
-    <button onclick="setAmount(5000)">₹5000</button>
-    <button onclick="setAmount(10000)">₹10000</button>
+  <div class="method" id="mOnline" onclick="selectMethod('Online Pay')">
+    <img src="online.png" alt="Online Pay"/><span>Online Pay</span>
   </div>
+</div>
 
-  <input type="number" id="customAmount" class="custom-amount" placeholder="Enter custom amount (200 - 50000)">
+<p class="hint">Recharge Method: <b id="methodText">Not selected</b></p>
 
-  <button class="deposit-btn" onclick="deposit()">Deposit</button>
+<div class="amounts">
+  <button onclick="setAmount(200)">₹200</button>
+  <button onclick="setAmount(500)">₹500</button>
+  <button onclick="setAmount(1000)">₹1000</button>
+  <button onclick="setAmount(2000)">₹2000</button>
+  <button onclick="setAmount(5000)">₹5000</button>
+  <button onclick="setAmount(10000)">₹10000</button>
+</div>
 
-  <div class="history">
-    <h3>Deposit History</h3>
-    <div id="historyList"></div>
-  </div>
+<input type="number" id="customAmount" class="custom-amount" placeholder="Enter custom amount (200 - 50000)" min="200" max="50000"/>
+
+<button class="deposit-btn" onclick="deposit()">Deposit</button>
+
+<div class="history">
+  <h3>Deposit History</h3>
+  <div id="historyList"></div>
+</div>
 
 <script>
   let selectedMethod = null;
 
-  function loadWallet() {
-    let balance = localStorage.getItem("walletBalance");
-    if (!balance) balance = 0;
-    document.getElementById("walletBalance").innerText = balance;
+  function money(n){ return (+(n||0)).toFixed(2); }
+
+  function loadWallet(){
+    let bal = parseFloat(localStorage.getItem('walletBalance')||'0');
+    if(isNaN(bal)) bal = 0;
+    document.getElementById('walletBalance').textContent = money(bal);
   }
 
-  function selectMethod(method) {
-    selectedMethod = method;
-    document.getElementById("methodText").innerText = method;
+  function selectMethod(m){
+    selectedMethod = m;
+    document.getElementById('methodText').textContent = m;
+    document.getElementById('mQR').classList.toggle('active', m==='QR Pay');
+    document.getElementById('mOnline').classList.toggle('active', m==='Online Pay');
   }
 
-  function setAmount(amount) {
-    document.getElementById("customAmount").value = amount;
+  function setAmount(a){
+    const el = document.getElementById('customAmount');
+    el.value = a;
   }
 
-  function deposit() {
-    let amount = parseInt(document.getElementById("customAmount").value);
-    if (!selectedMethod) {
-      alert("Please select a method first!");
+  function getHistory(){
+    try{ return JSON.parse(localStorage.getItem('depositHistory')||'[]'); }catch(e){ return []; }
+  }
+  function setHistory(arr){
+    localStorage.setItem('depositHistory', JSON.stringify(arr));
+  }
+
+  function renderHistory(){
+    const list = document.getElementById('historyList');
+    const his = getHistory();
+    list.innerHTML = his.slice().reverse().map(h => {
+      const cls = h.status==='Success' ? 'status-success' : 'status-pending';
+      return `<div class="history-item">
+        <div><b>₹${h.amount}</b> via ${h.method}</div>
+        <div><small>${h.time} | ${h.id}</small></div>
+        <div>Status: <span class="${cls}">${h.status}</span></div>
+      </div>`;
+    }).join('') || '<p>No history yet</p>';
+  }
+
+  function processPendingDeposits(){
+    let his = getHistory();
+    let changed = false;
+    const now = Date.now();
+    his.forEach(h => {
+      if(h.status==='Pending' && h.unlockAt && now >= h.unlockAt){
+        h.status = 'Success';
+        if(!h.credited){
+          let bal = parseFloat(localStorage.getItem('walletBalance')||'0');
+          bal += parseFloat(h.amount);
+          localStorage.setItem('walletBalance', money(bal));
+          h.credited = true;
+          changed = true;
+        }
+      }
+    });
+    if(changed) setHistory(his);
+    if(changed){ loadWallet(); renderHistory(); }
+  }
+
+  function deposit(){
+    // default to QR Pay if not chosen
+    if(!selectedMethod){ selectMethod('QR Pay'); }
+    const amtEl = document.getElementById('customAmount');
+    const amount = parseInt(amtEl.value, 10);
+    if(!amount || amount < 200 || amount > 50000){
+      alert('Amount must be between 200 and 50000');
       return;
     }
-    if (!amount || amount < 200 || amount > 50000) {
-      alert("Amount must be between 200 and 50000");
-      return;
-    }
 
-    let balance = parseInt(localStorage.getItem("walletBalance") || 0);
-    balance += amount;
-    localStorage.setItem("walletBalance", balance);
-    document.getElementById("walletBalance").innerText = balance;
-
-    let history = JSON.parse(localStorage.getItem("depositHistory") || "[]");
-    let entry = {
+    const id = 'RC' + Date.now();
+    const entry = {
+      id,
       method: selectedMethod,
       amount: amount,
       time: new Date().toLocaleString(),
-      id: "RC" + Date.now()
+      status: 'Pending',
+      unlockAt: Date.now() + 25000,
+      credited: false
     };
-    history.push(entry);
-    localStorage.setItem("depositHistory", JSON.stringify(history));
+    const his = getHistory();
+    his.push(entry);
+    setHistory(his);
     renderHistory();
 
-    window.location.href = "qr-payment_PAGE_FINAL.html?amt=" + amount + "&method=" + selectedMethod;
+    // Persist last pending id (optional)
+    localStorage.setItem('lastPendingDepositId', id);
+
+    // Redirect to QR page (correct file name)
+    const url = 'qr-payment_PAGE_FINAL_v3.html?id=' + encodeURIComponent(id) +
+                '&amt=' + encodeURIComponent(amount) +
+                '&method=' + encodeURIComponent(selectedMethod);
+    window.location.href = url;
   }
 
-  function renderHistory() {
-    let history = JSON.parse(localStorage.getItem("depositHistory") || "[]");
-    let list = document.getElementById("historyList");
-    list.innerHTML = "";
-    history.forEach(h => {
-      list.innerHTML += `<div class='history-item'>₹${h.amount} via ${h.method} <br><small>${h.time} | ${h.id}</small></div>`;
-    });
-  }
-
+  // init
   loadWallet();
   renderHistory();
+  processPendingDeposits();
+  setInterval(processPendingDeposits, 1000);
 </script>
 </body>
 </html>
