@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activity</title>
+  <style>
+    :root{
+      --bg:#0f0f0f;
+      --card:#1c1c1c;
+      --text:#f1f1f1;
+      --muted:#bbbbbb;
+      --gold1:#f6cc69;
+      --gold2:#e6a93c;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .container{padding:16px; max-width:720px; margin:0 auto;}
+    /* Top 4 small cards */
+    .top-grid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:12px;
+    }
+    .mini-card{
+      background:var(--card);
+      border-radius:14px;
+      padding:10px 8px;
+      text-align:center;
+      box-shadow:0 2px 10px rgba(0,0,0,.35);
+    }
+    .mini-card img{
+      width:30px;height:30px; object-fit:contain; display:block;
+      margin:0 auto 6px; border-radius:50%;
+      background:#222;
+    }
+    .mini-title{
+      font-size:12px; line-height:14px; color:var(--muted);
+    }
+
+    /* Two big cards */
+    .big-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+      margin-top:16px;
+    }
+    .big-card{
+      background:var(--card);
+      border-radius:16px;
+      padding:12px;
+      box-shadow:0 6px 20px rgba(0,0,0,.35);
+    }
+    .big-card img{
+      width:100%; height:120px; object-fit:cover; border-radius:12px; display:block;
+      background:#222;
+    }
+    .big-title{margin:10px 2px 0; font-size:18px; font-weight:700;}
+    .big-sub{margin:4px 2px 0; font-size:13px; color:var(--muted)}
+    .click{cursor:pointer}
+
+    /* Gift page */
+    .hidden{display:none}
+    .gift-page{padding:16px; max-width:720px; margin:0 auto;}
+    .poster{
+      width:100%; height:170px; border-radius:16px;
+      background:url('code.png') center/cover no-repeat, #222;
+      margin-bottom:16px;
+      box-shadow:0 6px 20px rgba(0,0,0,.35);
+    }
+    .field{margin:10px 0}
+    input[type="text"], input[type="number"]{
+      width:100%; padding:14px 12px; border-radius:12px; border:0; outline:0;
+      background:#121212; color:var(--text); font-size:16px;
+      box-shadow:inset 0 0 0 1px #2a2a2a;
+    }
+    .btn{
+      width:100%; padding:14px 12px; border:0; border-radius:14px; color:#1b1203;
+      background:linear-gradient(135deg,var(--gold1),var(--gold2));
+      font-weight:700; font-size:16px; cursor:pointer;
+      box-shadow:0 10px 25px rgba(0,0,0,.45);
+    }
+    .section-title{margin:18px 4px 8px; font-size:18px; font-weight:800}
+    .history{background:#101010; border-radius:12px; padding:12px}
+    .history-item{padding:10px 8px; border-bottom:1px solid #1f1f1f; font-size:14px}
+    .history-item:last-child{border-bottom:0}
+
+    /* Success popup */
+    .toast{
+      position:fixed; left:50%; bottom:18%;
+      transform:translateX(-50%);
+      background:rgba(0,0,0,.65);
+      color:#fff; padding:10px 16px; border-radius:12px;
+      font-size:14px; display:none; z-index:9999;
+      backdrop-filter: blur(3px);
+    }
+
+    /* Admin cross (slightly visible) */
+    .admin-cross{
+      position:fixed; right:10px; bottom:10px; width:28px; height:28px;
+      border-radius:50%; display:flex; align-items:center; justify-content:center;
+      color:#ff4d4d; background:rgba(255,77,77,.12);
+      box-shadow:0 2px 8px rgba(0,0,0,.4);
+      opacity:.65; cursor:pointer; z-index:999;
+      user-select:none;
+    }
+
+    /* Admin panel */
+    .admin-panel{
+      position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+      background:#181818; width:min(92vw,520px);
+      border-radius:16px; padding:16px; display:none; z-index:10000;
+      box-shadow:0 20px 60px rgba(0,0,0,.6);
+    }
+    .admin-title{margin:0 0 10px; font-size:18px; font-weight:800}
+    .admin-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .admin-actions{display:flex; gap:10px; margin-top:10px}
+    .btn-ghost{flex:1; background:#222; color:#eee; border-radius:12px; border:0; padding:12px}
+    .note{color:#aaa; font-size:12px; margin-top:6px}
+  </style>
+</head>
+<body>
+
+  <!-- MAIN -->
+  <div class="container" id="mainPage">
+    <div class="top-grid">
+      <div class="mini-card">
+        <img src="invite.png" alt="Invitation" />
+        <div class="mini-title">Invitation<br/>Bonus</div>
+      </div>
+      <div class="mini-card">
+        <img src="rebate.png" alt="Rebate" />
+        <div class="mini-title">Betting<br/>Rebate</div>
+      </div>
+      <div class="mini-card">
+        <img src="jackpot.png" alt="Jackpot" />
+        <div class="mini-title">Super<br/>Jackpot</div>
+      </div>
+      <div class="mini-card">
+        <img src="wheel.png" alt="Invite Wheel" />
+        <div class="mini-title">Invite<br/>Wheel</div>
+      </div>
+    </div>
+
+    <div class="big-grid">
+      <div class="big-card click" id="giftCard">
+        <img src="gifts.png" alt="Gifts" />
+        <div class="big-title">Gifts</div>
+        <div class="big-sub">Enter the redemption code to receive gift rewards</div>
+      </div>
+
+      <div class="big-card">
+        <img src="attendance.png" alt="Attendance" />
+        <div class="big-title">Attendance bonus</div>
+        <div class="big-sub">The more consecutive days you sign in, the higher the reward will be.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GIFTS PAGE -->
+  <div id="giftPage" class="gift-page hidden">
+    <div class="poster" style="background:url('code.png') center/cover no-repeat;"></div>
+
+    <div class="field">
+      <input id="giftCode" type="text" placeholder="Please enter gift code" />
+    </div>
+    <button class="btn" onclick="redeemCode()">Receive</button>
+
+    <div class="section-title">History</div>
+    <div id="history" class="history"></div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">✅ Received successful – Balance added</div>
+
+  <!-- Admin trigger -->
+  <div class="admin-cross" title="Admin">✕</div>
+
+  <!-- Admin panel -->
+  <div id="adminPanel" class="admin-panel">
+    <div class="admin-title">Create Gift Code</div>
+    <div class="field">
+      <input id="adminCode" type="text" placeholder="Gift code (e.g. FEST500)" />
+    </div>
+    <div class="admin-grid">
+      <input id="adminAmount" type="number" placeholder="Amount (₹)" />
+      <input id="adminCond" type="number" placeholder="Min deposit (₹) - optional" />
+    </div>
+    <div class="note">• Code ek baar use hone ke baad expire ho jayega.<br/>
+      • Deposit condition check deposit page ke localStorage (<code>totalDeposits</code>) se hoti hai.</div>
+    <div class="admin-actions">
+      <button class="btn" onclick="saveGift()">Create</button>
+      <button class="btn-ghost" onclick="closeAdmin()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // ---- Local state (shared across pages via localStorage) ----
+    let codes = JSON.parse(localStorage.getItem('giftCodes') || '{}');             // { CODE: {amount, condition, used} }
+    let history = JSON.parse(localStorage.getItem('giftHistory') || '[]');         // [ {code, amount, time} ]
+    let wallet = parseFloat(localStorage.getItem('walletBalance') || '0');         // shown on account/wingo
+    let wingo = parseFloat(localStorage.getItem('wingoBalance') || wallet);        // keep in sync
+    let totalDeposits = parseFloat(localStorage.getItem('totalDeposits') || '0');  // updated by deposit page
+
+    // --- UI references ---
+    const mainPage = document.getElementById('mainPage');
+    const giftPage = document.getElementById('giftPage');
+    const historyBox = document.getElementById('history');
+    const toast = document.getElementById('toast');
+
+    // Navigate to Gift page
+    document.getElementById('giftCard').addEventListener('click', () => {
+      mainPage.classList.add('hidden');
+      giftPage.classList.remove('hidden');
+      renderHistory();
+    });
+
+    // Render claim history
+    function renderHistory(){
+      if(!history.length){
+        historyBox.innerHTML = '<div class="history-item" style="color:#888">No data</div>';
+        return;
+      }
+      historyBox.innerHTML = history.map(h =>
+        `<div class="history-item">${h.time} — <b>${h.code}</b> : ₹${h.amount}</div>`
+      ).join('');
+    }
+
+    // Show toast
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(()=> toast.style.display = 'none', 2000);
+    }
+
+    // Redeem code with checks
+    function redeemCode(){
+      const code = document.getElementById('giftCode').value.trim();
+      if(!code) return alert('Enter a gift code');
+
+      const gift = codes[code];
+      if(!gift) return alert('Invalid code');
+      if(gift.used) return alert('Code already used');
+      if(gift.condition && totalDeposits < gift.condition){
+        return alert('Deposit at least ₹' + gift.condition + ' to claim this code.');
+      }
+
+      // Update balances (sync account + wingo)
+      wallet += Number(gift.amount) || 0;
+      wingo = wallet;
+      localStorage.setItem('walletBalance', wallet);
+      localStorage.setItem('wingoBalance', wingo);
+
+      // Save history & mark used
+      history.unshift({code: code, amount: gift.amount, time: new Date().toLocaleString()});
+      localStorage.setItem('giftHistory', JSON.stringify(history));
+      gift.used = true;
+      localStorage.setItem('giftCodes', JSON.stringify(codes));
+
+      showToast('✅ Received successful – Balance added');
+      renderHistory();
+      document.getElementById('giftCode').value = '';
+    }
+
+    // ---- Admin panel ----
+    const cross = document.querySelector('.admin-cross');
+    const adminPanel = document.getElementById('adminPanel');
+
+    cross.addEventListener('click', () => {
+      const pwd = prompt('Enter Admin Password:');
+      if(pwd === '456'){
+        adminPanel.style.display = 'block';
+      }
+    });
+
+    function closeAdmin(){ adminPanel.style.display = 'none'; }
+
+    function saveGift(){
+      const code = document.getElementById('adminCode').value.trim();
+      const amount = parseFloat(document.getElementById('adminAmount').value || '0');
+      const cond = parseFloat(document.getElementById('adminCond').value || '0');
+      if(!code || !amount) return alert('Please enter code and amount');
+      codes[code] = { amount: amount, condition: cond, used:false };
+      localStorage.setItem('giftCodes', JSON.stringify(codes));
+      alert('Code created');
+      closeAdmin();
+    }
+
+    // Initial render for history (if someone lands directly on gift page section via deep-link in future)
+    renderHistory();
+  </script>
+</body>
+</html>
