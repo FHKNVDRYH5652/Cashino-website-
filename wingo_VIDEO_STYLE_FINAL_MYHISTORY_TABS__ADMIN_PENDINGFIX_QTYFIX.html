@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RATAN WIN - WinGo (ALL FIXED FINAL)</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#0f1115; --panel:#171a20; --text:#e5e7eb; --gold:#f59e0b;
+         --green:#22c55e; --red:#ef4444; --violet:#8b5cf6; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Poppins,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  header{position:sticky;top:0;z-index:20;background:#12151a;border-bottom:1px solid #2a2f3a;
+         padding:12px 16px;display:flex;align-items:center;justify-content:center}
+  .brand{font-weight:800;letter-spacing:.5px}
+  .brand .grad{background:linear-gradient(90deg,#ff7e22,#25b63c);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .wallet{margin:12px;background:linear-gradient(180deg,#1a1d25,#151821);border-radius:14px;padding:16px;
+          display:flex;align-items:center;justify-content:space-between}
+  .btn{border:none;border-radius:26px;padding:10px 16px;font-weight:700;cursor:pointer}
+  .btn-red{background:#ef4444;color:#fff}.btn-green{background:#22c55e;color:#fff}
+  .banner{margin:12px;background:#14171f;border:1px solid #3a2b05;color:#ffe2a6;border-radius:12px;padding:12px}
+  .variants{margin:12px;display:flex;gap:10px}
+  .chip{flex:1;padding:12px;border-radius:14px;text-align:center;background:#222733;cursor:pointer;border:1px solid transparent;font-weight:600}
+  .chip.active{background:linear-gradient(180deg,#ffdd9a,#f3b13a);color:#111;border-color:#f59e0b}
+  .panel{margin:12px;background:var(--panel);border-radius:16px;padding:12px;box-shadow:0 0 0 1px #252a34 inset}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .timer{font-family:monospace;font-size:26px;background:#0f131a;padding:8px 12px;border-radius:8px;letter-spacing:1px}
+  .color-tabs{display:flex;gap:10px;margin:12px}
+  .color-tabs .tab{flex:1;padding:12px;text-align:center;border-radius:10px;font-weight:800;cursor:pointer;background:#222733}
+  .tab.green{background:#164b2b;color:#a7f3c7}.tab.red{background:#4b1717;color:#ffc1c1}.tab.violet{background:#2b214f;color:#d3c5ff}
+  .nums{margin:12px;background:#14171f;border-radius:16px;padding:12px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .ball{aspect-ratio:1/1;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:20px;cursor:pointer;border:3px solid rgba(255,255,255,.06);box-shadow:inset 0 6px 14px rgba(0,0,0,.6)}
+  .ball.red{background:radial-gradient(circle at 30% 30%,#ffb3b3,#ef4444 60%, #991b1b)}
+  .ball.green{background:radial-gradient(circle at 30% 30%,#b8ffd2,#22c55e 60%, #14532d)}
+  .ball.mix0{background:radial-gradient(circle at 30% 30%,#f0d0ff,#a855f7 45%, #ef4444)} /* 0: Red+Violet */
+  .ball.mix5{background:radial-gradient(circle at 30% 30%,#c6ffd8,#22c55e 45%, #a855f7)} /* 5: Green+Violet */
+  .stakebar{margin:12px;display:flex;gap:10px;flex-wrap:wrap}
+  .tag{padding:8px 12px;border-radius:999px;background:#262b38;border:1px solid #3a3f4a;cursor:pointer;font-weight:600}
+  .tag.active{background:#1d8a45;border-color:#2ddb6d}
+  .bigsmall{margin:12px;display:flex;gap:10px}
+  .big,.small{flex:1;padding:14px;border-radius:50px;font-weight:800;cursor:pointer;text-align:center}
+  .big{background:linear-gradient(180deg,#ffdd9a,#f3b13a);color:#111}
+  .small{background:#3b82f6}
+  .tabs2{display:flex;gap:10px;margin:12px}
+  .tabs2 .t{flex:1;padding:12px;text-align:center;border-radius:12px;background:#222733;font-weight:700;cursor:pointer}
+  .tabs2 .t.active{background:linear-gradient(180deg,#ffdd9a,#f3b13a);color:#111}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{padding:10px 8px;border-bottom:1px solid #2c3240;text-align:left}
+  th{background:#33260e;color:#ffe2a6;position:sticky;top:0}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%}.dot.red{background:#ef4444}.dot.green{background:#22c55e}.dot.violet{background:#8b5cf6}
+  .pager{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px}.pagebtn{padding:10px 14px;border-radius:10px;background:#222733;cursor:pointer}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18%;padding:16px 18px;border-radius:18px;display:none;z-index:30}
+  #betSuccess{background:rgba(0,0,0,.7);color:#fff;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(2px)}
+  #winToast{background:linear-gradient(180deg,#ffb84d,#ff8c1a);color:#111;border:2px solid #fff;box-shadow:0 8px 30px rgba(255,140,26,.45)}
+  #loseToast{background:linear-gradient(180deg,#eef2f7,#cdd4dd);color:#111;border:2px solid #d1d5db;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;z-index:25}
+  .sheet{width:100%;background:#171a20;border-top-left-radius:18px;border-top-right-radius:18px;padding:16px;border-top:6px solid #3b82f6}
+  .rowx{display:flex;align-items:center;gap:10px;margin:12px 0}
+  .qty{display:flex;align-items:center;gap:8px}
+  .qty input{width:80px;text-align:center;padding:10px;border-radius:8px;border:none;background:#0f0f12;color:#fff;font-weight:700}
+  .chipx{padding:8px 12px;border-radius:10px;background:#222733;cursor:pointer}
+  .agree{display:flex;align-items:center;gap:8px;margin:10px 0}
+  .actions{display:flex;gap:10px}.btn-ghost{flex:1;background:#222733;color:#ddd}.btn-primary{flex:2;background:#3b82f6;color:#fff}
+
+.win-modal {
+  position: fixed; top:0; left:0; right:0; bottom:0;
+  display: flex; justify-content: center; align-items: center;
+  background: rgba(0,0,0,0.6); z-index: 9999;
+}
+.win-card {
+  background: linear-gradient(180deg,#ff9800,#ff5722);
+  border-radius: 15px; padding: 20px; text-align: center;
+  color: #fff; width: 90%; max-width: 350px;
+  animation: popIn 0.4s ease;
+}
+.win-header {
+  font-size: 24px; font-weight: bold; margin-bottom: 10px;
+}
+.win-body p { margin: 5px 0; font-size: 16px; }
+.bonus { font-size: 28px; margin: 10px 0; font-weight: 700; }
+.hidden { display:none; }
+@keyframes popIn { from{transform:scale(0.7);} to{transform:scale(1);} }
+
+
+/* ===== Jalwa style win/lose modals ===== */
+.jl-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999}
+.jl-hidden{display:none}
+.jl-card{width:90%;max-width:420px;border-radius:24px;padding:22px 18px 20px;text-align:center;position:relative;
+         box-shadow:0 20px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.2); animation:jlPop .28s ease-out}
+.jl-card .jl-ribbon{position:absolute;left:0;right:0;top:-10px;height:18px;border-radius:10px 10px 0 0;
+                    background:rgba(0,0,0,.12)}
+.jl-medal{position:absolute;left:50%;top:-34px;transform:translateX(-50%); width:68px;height:68px;border-radius:50%;
+          display:grid;place-items:center;font-size:28px;background:#fff;box-shadow:0 8px 18px rgba(0,0,0,.28)}
+.jl-title{font-weight:800;font-size:26px;margin-top:18px;margin-bottom:10px;letter-spacing:.4px}
+.jl-row{margin:6px 0 10px 0;font-weight:600;opacity:.95}
+.jl-bonus{font-size:30px;font-weight:900;margin:10px 0 8px 0}
+.jl-period{opacity:.9;margin-top:4px}
+.jl-autoclose{opacity:.85;margin-top:8px}
+.jl-chip{display:inline-block;padding:6px 12px;border-radius:10px;background:rgba(255,255,255,.18);backdrop-filter:blur(2px);
+         border:1px solid rgba(255,255,255,.35);margin-left:6px;font-weight:800}
+.jl-chip-num{min-width:34px;text-align:center}
+
+/* Win colors (orange gradient) */
+.jl-win{color:#fff;background:linear-gradient(180deg,#ffb24c,#ff7b27);border:1px solid #ffd3a6}
+.jl-win .jl-bonus{color:#fff}
+/* Lose colors (icy blue card) */
+.jl-lose{color:#34495e;background:linear-gradient(180deg,#eef5ff,#cddbf4);border:1px solid #d7e3f7}
+.jl-lose .jl-title{color:#3b5182}
+.jl-lose .jl-lose-big{font-size:30px;font-weight:900;color:#b8866b;margin:10px 0 6px}
+.jl-chip-red{background:#ffd5d5;border-color:#ffc4c4;color:#cf3d3d}
+
+@keyframes jlPop{from{transform:translateY(8px) scale(.92);opacity:.3} to{transform:translateY(0) scale(1);opacity:1}}
+
+
+/* My History styles */
+.history-row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #ddd;cursor:pointer;}
+.history-left{display:flex;flex-direction:column;}
+.history-opt{font-weight:700;}
+.history-status{font-weight:700;}
+.history-status.win{color:green;}
+.history-status.lose{color:red;}
+.history-detail{display:none;padding:10px;background:#f0f0f0;font-size:14px;}
+
+
+/* === ADMIN FAB & PANEL === */
+.admin-fab{
+  position:fixed; right:16px; bottom:16px; width:48px; height:48px;
+  border-radius:50%; display:none; align-items:center; justify-content:center;
+  font-size:28px; font-weight:900; cursor:pointer; z-index:9999;
+  background:linear-gradient(180deg,#222733,#171a20);
+  color:#f87171; border:2px solid #2c3240; box-shadow:0 10px 30px rgba(0,0,0,.35);
+  user-select:none;
+}
+.admin-fab:hover{ transform:scale(1.05); }
+
+#adminGate,#adminPanel{
+  position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.55); z-index:10000;
+}
+.adm-card{
+  width:92%; max-width:420px; background:#171a20; color:#e5e7eb;
+  border-radius:18px; padding:16px; border:1px solid #2c3240;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.adm-title{font-weight:800; font-size:18px; margin-bottom:10px;}
+.adm-row{display:flex; gap:10px; align-items:center; margin:8px 0;}
+.adm-row input, .adm-row select{
+  flex:1; background:#0f131a; color:#fff; border:none; border-radius:10px; padding:10px; font-weight:700;
+}
+.adm-actions{display:flex; gap:10px; margin-top:12px;}
+.adm-btn{flex:1; padding:10px 12px; border:none; border-radius:12px; font-weight:800; cursor:pointer;}
+.adm-ghost{background:#222733; color:#e5e7eb;}
+.adm-primary{background:#3b82f6; color:#fff;}
+.adm-danger{background:#ef4444; color:#fff;}
+.adm-ok{background:#22c55e; color:#111;}
+.adm-note{opacity:.8; font-size:12px; margin-top:6px;}
+
+</style>
+</head>
+<body>
+<header><div class="brand"><span class="grad">RATAN WIN</span></div></header>
+
+<section class="wallet">
+  <div>
+    <div style="opacity:.9">Wallet balance</div>
+    <div id="balance" style="font-size:26px;font-weight:800">₹0.00</div>
+  </div>
+  <div style="display:flex; gap:8px">
+    <button class="btn btn-red" onclick="alert('Withdraw flow TBD')">Withdraw</button>
+    <button class="btn btn-green" onclick="alert('Deposit flow TBD')">Deposit</button>
+  </div>
+</section>
+
+<div class="banner">Welcome to RATAN WIN game platform, we will serve you wholeheartedly!</div>
+
+<div class="variants">
+  <div class="chip active" data-variant="30">WinGo 30sec</div>
+  <div class="chip" data-variant="60">WinGo 1 Min</div>
+  <div class="chip" data-variant="180">WinGo 3 Min</div>
+  <div class="chip" data-variant="300">WinGo 5 Min</div>
+</div>
+
+<section class="panel">
+  <div class="row">
+    <div style="font-weight:700">WinGo <span id="vlabel">30sec</span></div>
+    <div class="row" style="gap:8px">
+      <div>Time remaining</div>
+      <div id="count" class="timer">00:30 sec</div>
+    </div>
+  </div>
+  <div class="row">
+    <div>Period</div>
+    <div id="period" style="font-family:monospace"></div>
+  </div>
+</section>
+
+<div class="color-tabs">
+  <div class="tab green" onclick="openBet('COLOR','Green')">Green</div>
+  <div class="tab violet" onclick="openBet('COLOR','Violet')">Violet</div>
+  <div class="tab red" onclick="openBet('COLOR','Red')">Red</div>
+</div>
+
+<div class="nums" id="nums"></div>
+
+<div class="stakebar">
+  <div class="tag" data-m="RANDOM">Random</div>
+  <div class="tag active" data-m="1">X1</div>
+  <div class="tag" data-m="5">X5</div>
+  <div class="tag" data-m="10">X10</div>
+  <div class="tag" data-m="20">X20</div>
+  <div class="tag" data-m="50">X50</div>
+  <div class="tag" data-m="100">X100</div>
+</div>
+
+<div class="bigsmall">
+  <div class="big" onclick="openBet('BS','Big')">Big</div>
+  <div class="small" onclick="openBet('BS','Small')">Small</div>
+</div>
+
+<div class="tabs2">
+    <div class="t active">Game history</div>
+    <div class="t">Chart</div>
+    <div class="t" onclick="openMyHistory()">My History</div>
+  </div>
+  <div class="t">Chart</div>
+  <div class="t">Follow Strategy</div>
+</div>
+
+<section class="panel">
+  <table id="history">
+    <thead>
+      <tr><th>Period</th><th>Number</th><th>Big Small</th><th>Color</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div class="pager">
+    <div class="pagebtn" onclick="prevPage()">&lt;</div>
+    <div id="pageno">1/50</div>
+    <div class="pagebtn" onclick="nextPage()">&gt;</div>
+  </div>
+</section>
+
+<!-- Bet Modal -->
+<div class="modal" id="betModal">
+  <div class="sheet" id="sheet">
+    <h3 id="betTitle">WinGo 30sec</h3>
+    <div id="betSelection" style="margin-top:8px;font-weight:700"></div>
+    <div class="rowx">
+      <div style="min-width:80px">Balance</div>
+      <div class="chipx" onclick="qtyMultiply(1)">1</div>
+      <div class="chipx" onclick="qtyMultiply(10)">10</div>
+      <div class="chipx" onclick="qtyMultiply(100)">100</div>
+      <div class="chipx" onclick="qtyMultiply(1000)">1000</div>
+    </div>
+    <div class="rowx">
+      <div style="min-width:80px">Quantity</div>
+      <div class="qty">
+        <button class="chipx" onclick="chgQty(-1)">-</button>
+        <input id="qty" type="number" value="1" min="1">
+        <button class="chipx" onclick="chgQty(1)">+</button>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <div class="chipx" onclick="setX(1)">X1</div>
+        <div class="chipx" onclick="setX(5)">X5</div>
+        <div class="chipx" onclick="setX(10)">X10</div>
+        <div class="chipx" onclick="setX(20)">X20</div>
+        <div class="chipx" onclick="setX(50)">X50</div>
+        <div class="chipx" onclick="setX(100)">X100</div>
+      </div>
+    </div>
+    <div class="agree"><input id="agree" type="checkbox" checked> <label for="agree">I agree <span style="color:#f87171">《Pre-sale rules》</span></label></div>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="closeBet()">Cancel</button>
+      <button class="btn btn-primary" id="placeBtn" onclick="placeBet()">Total amount ₹<span id="amount">1.00</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Popups -->
+<div class="toast" id="betSuccess">✔ Bet Successful</div>
+<div>Bonus: ₹<span id="winAmt">0.00</span></div></div>
+<div class="toast" id="loseToast"><div style="font-weight:800">Sorry</div><div>Lose</div></div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
+
+<script>
+// ================== CONFIG & STATE (All Fixed) ==================
+const firebaseConfig = {
+  apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
+  authDomain: "terminal-xxrr.firebaseapp.com",
+  databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "terminal-xxrr",
+  storageBucket: "terminal-xxrr.firebasestorage.app",
+  messagingSenderId: "722753278120",
+  appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
+  measurementId: "G-E3MZH3E1K5"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Variants
+const FIXED_START_PERIOD = 2025091000010250;
+let variant = 30; // seconds
+let tickTimer = null;
+let meta = null; // {startTs, periodStart, sec}
+let lastPeriod = null;
+
+let xMult = 1;
+let pendingBet = null; // {period,type,value,stake}
+
+// Wallet
+function loadWallet(){
+  let w = parseFloat(localStorage.getItem('wallet')||'0');
+  if(!w || isNaN(w)){ w = 100; localStorage.setItem('wallet', w.toFixed(2)); }
+  updateBalance(w);
+}
+function updateBalance(v){
+  localStorage.setItem('wallet', (+v).toFixed(2));
+  document.getElementById('balance').textContent = '₹' + (+v).toFixed(2);
+}
+loadWallet();
+
+// Numbers grid
+const numsEl = document.getElementById('nums');
+function numClass(n){ if(n===0) return 'mix0'; if(n===5) return 'mix5'; return [1,3,7,9].includes(n)?'green':'red'; }
+for(let n=0;n<=9;n++){
+  const d = document.createElement('div');
+  d.className = 'ball '+numClass(n);
+  d.textContent = n;
+  d.onclick = ()=>openBet('NUM', n);
+  numsEl.appendChild(d);
+}
+
+// Stake pills
+document.querySelectorAll('.tag[data-m]').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.tag[data-m]').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const m = t.dataset.m;
+    xMult = (m==='RANDOM') ? [1,5,10,20,50,100][Math.floor(Math.random()*6)] : +m;
+    refreshAmount();
+  };
+});
+
+// Variant switch
+document.querySelectorAll('.chip').forEach(ch=>{
+  ch.onclick = ()=>{
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    ch.classList.add('active');
+    variant = +ch.dataset.variant;
+    document.getElementById('vlabel').textContent = (variant===30?'30sec':variant===60?'1 Min':variant===180?'3 Min':'5 Min');
+    document.getElementById('betTitle').textContent = `WinGo ${document.getElementById('vlabel').textContent}`;
+    detachHistoryListener();
+    startSyncedSchedule();
+  }
+});
+
+// Helpers
+function pad2(n){ return String(n).padStart(2,'0'); }
+function formatMMSS(sec){
+  sec = Math.max(0, Math.ceil(sec));
+  const m = Math.floor(sec/60), s = sec%60;
+  return pad2(m)+':'+pad2(s)+' sec';
+}
+function getColors(n){
+  if(n===0) return ['Red','Violet'];
+  if(n===5) return ['Green','Violet'];
+  if([1,3,7,9].includes(n)) return ['Green'];
+  return ['Red'];
+}
+function showToast(id){
+  const t = document.getElementById(id); t.style.display='block';
+  setTimeout(()=> t.style.display='none', 3000);
+}
+function refreshAmount(){
+  let qEl = document.getElementById('qty');
+  if(!qEl) return;
+  let v = qEl.value.trim();
+
+  // Allow empty input (user can delete)
+  if(v === ""){
+    document.getElementById('amount').textContent = "0.00";
+    return;
+  }
+
+  let q = parseInt(v,10);
+  if(isNaN(q) || q<1) q = 1;
+  qEl.value = q;
+  const total = q * xMult;
+  document.getElementById('amount').textContent = total.toFixed(2);
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const qEl = document.getElementById('qty'); if(qEl) qEl.addEventListener('input', refreshAmount);
+});
+
+// ================== HISTORY (10/page | 50 pages | Firebase + Local) ==================
+let historyData = [];
+let currentPage = 1;
+const PAGE_SIZE = 10;
+const MAX_PAGES = 50;
+let historyRef = null;
+
+function renderHistory(){
+  const tb = document.querySelector('#history tbody'); if(!tb) return;
+  tb.innerHTML='';
+  const start = (currentPage-1)*PAGE_SIZE, end = start+PAGE_SIZE;
+  const rows = historyData.slice(start,end);
+  rows.forEach(it=>{
+    const colorDots = it.colors.map(c=>`<span class="dot ${c.toLowerCase()}"></span>`).join(' ');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${it.period}</td>
+      <td style="font-weight:800;color:${[1,3,7,9].includes(it.num)?'#22c55e':(it.num===0||it.num===5?'#8b5cf6':'#ef4444')}">${it.num}</td>
+      <td>${it.bs}</td>
+      <td>${colorDots}</td>`;
+    tb.appendChild(tr);
+  });
+  const pageno=document.getElementById('pageno');
+  const totalPages = Math.max(1, Math.ceil(historyData.length/PAGE_SIZE));
+  if(pageno) pageno.textContent = `${currentPage}/${Math.min(totalPages,MAX_PAGES)}`;
+}
+
+function saveHistoryCache(){
+  try{ localStorage.setItem('wingo_history_'+variant, JSON.stringify(historyData)); }catch(e){}
+}
+function loadHistoryCache(){
+  try{
+    const d = localStorage.getItem('wingo_history_'+variant);
+    if(d){
+      const arr = JSON.parse(d);
+      if(Array.isArray(arr) && arr.length){
+        historyData = arr;
+        currentPage = 1;
+        renderHistory();
+      }
+    }
+  }catch(e){}
+}
+
+function upsertLocal(period, res){
+  if(!res || typeof res.num==='undefined') return;
+  const pStr = String(period);
+  const bs = res.bs || ((+res.num)>=5 ? 'Big' : 'Small');
+  const colors = res.colors || getColors(+res.num);
+  const obj = { period:pStr, num:+res.num, bs, colors };
+
+  const idx = historyData.findIndex(r=>String(r.period)===pStr);
+  if(idx!==-1) historyData[idx] = obj;
+  else historyData.unshift(obj);
+
+  if(historyData.length > PAGE_SIZE*MAX_PAGES) historyData = historyData.slice(0, PAGE_SIZE*MAX_PAGES);
+  saveHistoryCache();
+  if(currentPage===1) renderHistory();
+}
+
+function pushFirebase(period, res){
+  const pStr = String(period);
+  db.ref(`wingo/${variant}/results/${pStr}`).set({
+    num:+res.num,
+    bs: res.bs || ((+res.num)>=5 ? 'Big' : 'Small'),
+    colors: res.colors || getColors(+res.num),
+    ts: res.ts || Date.now()
+  });
+}
+
+function attachHistoryListener(){
+  if(historyRef){ historyRef.off(); historyRef=null; }
+  historyRef = db.ref(`wingo/${variant}/results`).limitToLast(PAGE_SIZE*MAX_PAGES);
+  historyRef.on('child_added', (snap)=> upsertLocal(snap.key, snap.val()));
+  historyRef.on('child_changed', (snap)=> upsertLocal(snap.key, snap.val()));
+}
+function detachHistoryListener(){ if(historyRef){ historyRef.off(); historyRef=null; } }
+
+async function loadHistory(){
+  // 1) Show cached immediately
+  loadHistoryCache();
+
+  // 2) Load from Firebase (truth) and overwrite local
+  try{
+    const ref = db.ref(`wingo/${variant}/results`).limitToLast(PAGE_SIZE*MAX_PAGES);
+    const snap = await ref.get();
+    if(snap && snap.exists && snap.exists()){
+      const rows=[]; snap.forEach(ch=> rows.push({period: ch.key, ...ch.val()}));
+      rows.sort((a,b)=> b.period.localeCompare(a.period));
+      historyData = rows.slice(0, PAGE_SIZE*MAX_PAGES);
+      saveHistoryCache();
+      currentPage = 1;
+      renderHistory();
+    }
+  }catch(e){ console.error("History load error", e); }
+
+  // 3) Attach realtime listener so new results always flow in
+  attachHistoryListener();
+}
+
+// Pager
+function prevPage(){ if(currentPage>1){ currentPage--; renderHistory(); } }
+function nextPage(){ const totalPages = Math.max(1, Math.ceil(historyData.length/PAGE_SIZE)); if(currentPage<totalPages && currentPage<MAX_PAGES){ currentPage++; renderHistory(); } }
+
+// ================== SYNCED SCHEDULE ==================
+async function ensureMeta(){
+  const ref = db.ref(`wingo/${variant}/meta`);
+  await ref.transaction(curr=>{
+    if(curr) return curr;
+    return { startTs: Date.now(), periodStart: FIXED_START_PERIOD, sec: variant };
+  });
+  const snap = await ref.get(); meta = snap.val();
+}
+
+function computeTick(){
+  const now = Date.now();
+  const elapsed = now - meta.startTs;
+  const cycle = meta.sec*1000;
+  const idx = Math.floor(elapsed/cycle);
+  const remainMs = cycle - (elapsed % cycle);
+  const period = meta.periodStart + idx;
+  const remainSec = Math.ceil(remainMs/1000);
+  return { period, remainSec };
+}
+
+async function ensureResult(periodStr){
+
+  // Check if admin preset exists in pendingResults
+  const pref = db.ref(`wingo/${variant}/pendingResults/${periodStr}`);
+  const psnap = await pref.get();
+  if(psnap.exists()){
+    const val = psnap.val();
+    await db.ref(`wingo/${variant}/results/${periodStr}`).set(val);
+    await pref.remove(); // clear pending
+    upsertLocal(periodStr, val);
+    return;
+  }
+
+  const ref = db.ref(`wingo/${variant}/results/${periodStr}`);
+  const snap = await ref.get();
+  if(snap.exists()){ upsertLocal(periodStr, snap.val()); return; }
+  await ref.transaction(curr=>{
+    if(curr) return curr;
+    const num = Math.floor(Math.random()*10);
+    const bs = (num>=5)?'Big':'Small';
+    const colors = getColors(num);
+    return { num, bs, colors, ts: Date.now() };
+  });
+  const s2 = await ref.get(); if(s2.exists()){ upsertLocal(periodStr, s2.val()); }
+
+  // Trim oldest beyond 500 (server + cache)
+  try{
+    const all = await db.ref(`wingo/${variant}/results`).get();
+    const keys=[]; all.forEach(ch=> keys.push(ch.key));
+    if(keys.length > PAGE_SIZE*MAX_PAGES){
+      keys.sort(); // oldest first
+      const toDel = keys.length - PAGE_SIZE*MAX_PAGES;
+      for(let i=0;i<toDel;i++){ await db.ref(`wingo/${variant}/results/${keys[i]}`).remove(); }
+      // Also trim local cache (by period order)
+      historyData = historyData.slice(0, PAGE_SIZE*MAX_PAGES);
+      saveHistoryCache();
+    }
+  }catch(e){}
+}
+
+async function startSyncedSchedule(){
+  if(tickTimer) clearInterval(tickTimer);
+  await ensureMeta();
+  await loadHistory();
+
+  const first = computeTick(); lastPeriod = String(first.period);
+  document.getElementById('period').textContent = first.period;
+  document.getElementById('count').textContent = formatMMSS(first.remainSec);
+
+  tickTimer = setInterval(async ()=>{
+    const {period, remainSec} = computeTick();
+    document.getElementById('count').textContent = formatMMSS(remainSec);
+    document.getElementById('period').textContent = period;
+
+    if(remainSec === 1){ await ensureResult(period); }
+
+    if(String(period) !== lastPeriod){
+      const prev = lastPeriod;
+      await ensureResult(prev);
+      await resolveBet(prev);
+      lastPeriod = String(period);
+    }
+  }, 250);
+}
+
+// ================== BETTING ==================
+function openBet(type, value){
+  document.getElementById('betTitle').textContent = `WinGo ${document.getElementById('vlabel').textContent}`;
+  document.getElementById('betSelection').textContent = (type==='NUM')?`Select Number ${value}`:`Select ${value}`;
+  xMult = 1; document.getElementById('qty').value=1; refreshAmount();
+  document.getElementById('betModal').style.display='flex';
+  pendingBet = { type, value, stake: 0, period: null };
+}
+function closeBet(){ document.getElementById('betModal').style.display='none'; }
+function chgQty(d){
+  const q = document.getElementById('qty');
+  let v = Math.max(1, (+q.value||1)+d);
+  q.value = v; refreshAmount();
+}
+function qtyMultiply(val){
+  const q = document.getElementById('qty');
+  q.value = Math.max(1, (+q.value||1) * val);
+  refreshAmount();
+}
+function setX(n){ xMult = n; refreshAmount(); }
+
+function placeBet(){
+  if(!document.getElementById('agree').checked){ alert('Please agree to rules'); return; }
+  if(!pendingBet) return;
+  refreshAmount();
+  const total = +document.getElementById('amount').textContent;
+  let bal = parseFloat(localStorage.getItem('wallet')||'0');
+  if(bal < total){ alert('Insufficient balance'); return; }
+  bal -= total; updateBalance(bal);
+
+  const {period} = computeTick();
+  pendingBet.period = String(period);
+  pendingBet.stake = total;
+  showToast('betSuccess');
+  closeBet();
+}
+
+function checkWin(bet, res){
+  if(bet.type==='BS') return bet.value===res.bs;
+  if(bet.type==='COLOR') return res.colors.includes(bet.value);
+  if(bet.type==='NUM') return (+bet.value)===res.num;
+  return false;
+}
+
+
+function showWinPopup(color, number, bs, amount, period){
+  document.getElementById('winColor').textContent = color;
+  document.getElementById('winNumber').textContent = number;
+  document.getElementById('winBS').textContent = bs;
+  document.getElementById('winAmount').textContent = amount.toFixed(2);
+  document.getElementById('winPeriod').textContent = period;
+
+  const modal = document.getElementById('winModal');
+  modal.classList.remove('hidden');
+
+  setTimeout(() => {
+    modal.classList.add('hidden');
+  }, 3000);
+}
+
+
+function openWinModal({color, number, bs, amount, period}){
+  document.getElementById('jlWinColor').textContent = color;
+  document.getElementById('jlWinNum').textContent = number;
+  document.getElementById('jlWinBS').textContent = bs;
+  document.getElementById('jlWinAmount').textContent = (+amount).toFixed(2);
+  document.getElementById('jlWinPeriod').textContent = period;
+  const m = document.getElementById('winModal');
+  m.classList.remove('jl-hidden');
+  setTimeout(()=> m.classList.add('jl-hidden'), 3000);
+}
+function openLoseModal({color, number, bs, period}){
+  document.getElementById('jlLoseColor').textContent = color;
+  document.getElementById('jlLoseNum').textContent = number;
+  document.getElementById('jlLoseBS').textContent = bs;
+  document.getElementById('jlLosePeriod').textContent = period;
+  const m = document.getElementById('loseModal');
+  m.classList.remove('jl-hidden');
+  setTimeout(()=> m.classList.add('jl-hidden'), 3000);
+}
+
+
+let myHistory = JSON.parse(localStorage.getItem('myHistory')||'[]');
+
+function saveMyHistory(){
+  localStorage.setItem('myHistory', JSON.stringify(myHistory));
+}
+
+function addMyHistory(order){
+  myHistory.unshift(order);
+  if(myHistory.length>200) myHistory.pop();
+  saveMyHistory();
+}
+
+function updateMyHistory(period, status, winAmount, result){
+  const idx = myHistory.findIndex(o=>o.period===period);
+  if(idx!==-1){
+    myHistory[idx].status = status;
+    myHistory[idx].winAmount = winAmount;
+    myHistory[idx].result = result;
+    saveMyHistory();
+  }
+}
+
+
+function openMyHistory(){
+  // Hide other tab sections
+  document.querySelectorAll('.content-section').forEach(sec=>sec.style.display='none');
+  document.getElementById('myHistorySection').style.display='block';
+
+  // Tab active state
+  document.querySelectorAll('.tabs2 .t').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tabs2 .t')[2].classList.add('active'); // 3rd tab = My History
+
+  // Render history rows
+  const list = document.getElementById('myHistoryList');
+  list.innerHTML = '';
+  myHistory.forEach((o,i)=>{
+    const row = document.createElement('div');
+    row.className='history-row';
+    row.innerHTML = `<div class='history-left'>
+        <div class='history-opt'>${o.option}</div>
+        <div class='history-period'>${o.period} | ${o.time}</div>
+      </div>
+      <div class='history-right'>
+        <div class='history-status ${o.status==='Win'?'win':(o.status==='Lose'?'lose':'')}'>${o.status||'Pending'}</div>
+        <div class='history-amt'>₹${o.winAmount!==undefined?o.winAmount:o.amount}</div>
+      </div>`;
+    row.onclick=()=>toggleDetail(i,row);
+    list.appendChild(row);
+
+    // detail row
+    const det=document.createElement('div');
+    det.className='history-detail';
+    det.id='detail-'+i;
+    det.innerHTML = `<p><b>Order No:</b> ${i+1}</p>
+    <p><b>Period:</b> ${o.period}</p>
+    <p><b>Purchase Amount:</b> ₹${o.amount}</p>
+    <p><b>Quantity:</b> ${o.qty||1}</p>
+    <p><b>Result:</b> ${o.result||'-'}</p>
+    <p><b>Selected Option:</b> ${o.option}</p>
+    <p><b>Status:</b> ${o.status||'Pending'}</p>
+    <p><b>Win/Loss Amount:</b> ₹${o.winAmount||0}</p>
+    <p><b>Order Time:</b> ${o.time}</p>`;
+    list.appendChild(det);
+  });
+}
+
+
+function toggleDetail(i,row){
+  const det=document.getElementById('detail-'+i);
+  det.style.display = det.style.display==='block'?'none':'block';
+}
+
+async function resolveBet(periodStr){
+  if(!pendingBet || pendingBet.period !== String(periodStr)) return;
+  const ref = db.ref(`wingo/${variant}/results/${periodStr}`);
+  const snap = await ref.get(); if(!snap.exists()) { pendingBet=null; return; }
+  const res = snap.val();
+  const win = checkWin(pendingBet, res);
+  if(win){
+    const rate = (pendingBet.type==='NUM') ? 7.8 : 1.96;
+    const prize = pendingBet.stake * rate;
+    const bal = parseFloat(localStorage.getItem('wallet')||'0') + prize;
+    updateBalance(bal);
+    document.getElementById('winAmt').textContent = prize.toFixed(2);
+    openWinModal({color: res.colors.join(', '), number: res.num, bs: res.bs, amount: prize, period: periodStr});
+    updateMyHistory(periodStr,'Win',prize,res.num+' '+res.colors.join(', ')+' '+res.bs);
+  }else{
+    openLoseModal({color: res.colors.join(', '), number: res.num, bs: res.bs, period: periodStr});
+    updateMyHistory(periodStr,'Lose',0,res.num+' '+res.colors.join(', ')+' '+res.bs);
+  }
+  pendingBet = null;
+}
+
+// Boot
+startSyncedSchedule();
+</script>
+
+
+
+
+<!-- WIN MODAL (Jalwa clone) -->
+<div id="winModal" class="jl-overlay jl-hidden" role="dialog" aria-modal="true">
+  <div class="jl-card jl-win">
+    <div class="jl-ribbon"></div>
+    <div class="jl-medal">🏆</div>
+    <div class="jl-title">🎉 Congratulations 🎉</div>
+    <div class="jl-row">Lottery results:
+      <span id="jlWinColor" class="jl-chip"></span>
+      <span id="jlWinNum" class="jl-chip jl-chip-num"></span>
+      <span id="jlWinBS" class="jl-chip"></span>
+    </div>
+    <div class="jl-bonus">Bonus: ₹<span id="jlWinAmount"></span></div>
+    <div class="jl-period">Period: <span id="jlWinPeriod"></span></div>
+    <div class="jl-autoclose">3 seconds auto close</div>
+  </div>
+</div>
+
+<!-- LOSE MODAL (Jalwa clone) -->
+<div id="loseModal" class="jl-overlay jl-hidden" role="dialog" aria-modal="true">
+  <div class="jl-card jl-lose">
+    <div class="jl-ribbon"></div>
+    <div class="jl-medal">🛑</div>
+    <div class="jl-title">Sorry</div>
+    <div class="jl-row">Lottery results:
+      <span id="jlLoseColor" class="jl-chip jl-chip-red"></span>
+      <span id="jlLoseNum" class="jl-chip jl-chip-num jl-chip-red"></span>
+      <span id="jlLoseBS" class="jl-chip jl-chip-red"></span>
+    </div>
+    <div class="jl-lose-big">Lose</div>
+    <div class="jl-period">Period: <span id="jlLosePeriod"></span></div>
+    <div class="jl-autoclose">3 seconds auto close</div>
+  </div>
+</div>
+
+
+<!-- MY HISTORY SECTION -->
+<div id="myHistorySection" class="content-section" style="display:none; padding:10px; font-family:sans-serif;">
+  <h2 style="margin:10px 0; font-size:20px;">My History</h2>
+  <div id="myHistoryList" style="background:#fafafa; border-radius:8px; overflow:hidden;"></div>
+</div>
+
+
+<!-- === ADMIN CONTROLS (hidden) === -->
+<div id="adminFab" class="admin-fab" title="×">×</div>
+
+<!-- Admin password gate -->
+<div id="adminGate">
+  <div class="adm-card">
+    <div class="adm-title">Owner Access</div>
+    <div class="adm-row"><input id="adm-pass" type="password" placeholder="Enter passcode" /></div>
+    <div class="adm-actions">
+      <button class="adm-btn adm-ghost" onclick="document.getElementById('adminGate').style.display='none'">Cancel</button>
+      <button class="adm-btn adm-primary" onclick="admCheckPass()">Unlock</button>
+    </div>
+    <div class="adm-note">Hint: Only you know the code. The button appears after a small scroll.</div>
+  </div>
+</div>
+
+<!-- Admin panel -->
+<div id="adminPanel">
+  <div class="adm-card">
+    <div class="adm-title">Admin Panel — Set Current Period Result</div>
+    <div class="adm-row">
+      <input id="adm-variant" type="text" readonly />
+      <input id="adm-period" type="text" readonly />
+    </div>
+    <div class="adm-row">
+      <select id="adm-mode">
+        <option value="NUM" selected>Set by Number (0–9)</option>
+        <option value="BS">Set by Big/Small (auto-pick number)</option>
+        <option value="COLOR_RED">Set by Color: Red (auto-pick number)</option>
+        <option value="COLOR_GREEN">Set by Color: Green (auto-pick number)</option>
+        <option value="COLOR_VIOLET">Set by Color: Violet (auto-pick number)</option>
+      </select>
+    </div>
+    <div class="adm-row">
+      <input id="adm-number" type="number" min="0" max="9" placeholder="Number 0–9 (for NUM)" />
+      <select id="adm-bs">
+        <option value="Big">Big (5–9)</option>
+        <option value="Small">Small (0–4)</option>
+      </select>
+    </div>
+    <div class="adm-actions">
+      <button class="adm-btn adm-danger" onclick="admClearCurrent()">Clear Current</button>
+      <button class="adm-btn adm-ok" onclick="admSetCurrent()">Set Result</button>
+      <button class="adm-btn adm-ghost" onclick="document.getElementById('adminPanel').style.display='none'">Close</button>
+    </div>
+    <div class="adm-note">If you don't set, the system will publish a random result at the end of the timer. Setting writes to Firebase so every user sees the same.</div>
+  </div>
+</div>
+
+<script>
+// === ADMIN LOGIC ===
+(function(){
+  const fab = document.getElementById('adminFab');
+  const gate = document.getElementById('adminGate');
+  const panel = document.getElementById('adminPanel');
+  const PASS = '456';
+
+  // show fab after a nice scroll
+  window.addEventListener('scroll', ()=>{
+    if(window.scrollY > 250){ fab.style.display='flex'; }
+  }, {passive:true});
+
+  fab.addEventListener('click', ()=>{
+    if(localStorage.getItem('isAdmin')==='1'){ admOpenPanel(); }
+    else{ gate.style.display='flex'; setTimeout(()=>document.getElementById('adm-pass').focus(), 50); }
+  });
+
+  window.admCheckPass = function(){
+    const v = (document.getElementById('adm-pass').value||'').trim();
+    if(v===PASS){
+      localStorage.setItem('isAdmin','1');
+      gate.style.display='none';
+      admOpenPanel();
+    }else{
+      alert('Wrong code');
+    }
+  };
+
+  function fillPanelMeta(){
+    try{
+      const t = computeTick();
+      document.getElementById('adm-variant').value = 'Variant: ' + variant + 's';
+      document.getElementById('adm-period').value = 'Period: ' + t.period;
+      // defaults
+      document.getElementById('adm-number').value = '';
+      document.getElementById('adm-bs').value = 'Big';
+      document.getElementById('adm-mode').value = 'NUM';
+    }catch(e){}
+  }
+
+  window.admOpenPanel = function(){
+    fillPanelMeta();
+    panel.style.display='flex';
+  };
+
+  function pickNumberByBS(bs){
+    if(bs==='Big'){
+      // 5–9
+      return 5 + Math.floor(Math.random()*5);
+    }else{
+      // 0–4
+      return Math.floor(Math.random()*5);
+    }
+  }
+
+  function pickNumberByColor(tag){
+    if(tag==='COLOR_VIOLET'){
+      // 0 or 5 produce violet
+      return Math.random()<0.5 ? 0 : 5;
+    }
+    if(tag==='COLOR_GREEN'){
+      // green numbers: 1,3,7,9
+      const arr=[1,3,7,9];
+      return arr[Math.floor(Math.random()*arr.length)];
+    }
+    // COLOR_RED
+    // red numbers: 2,4,6,8
+    const arr=[2,4,6,8];
+    return arr[Math.floor(Math.random()*arr.length)];
+  }
+
+  window.admSetCurrent = async function(){
+    try{
+      const {period} = computeTick();
+      const mode = document.getElementById('adm-mode').value;
+      let num = null;
+      if(mode==='NUM'){
+        const raw = +document.getElementById('adm-number').value;
+        if(isNaN(raw) || raw<0 || raw>9){ alert('Enter number 0–9'); return; }
+        num = raw;
+      }else if(mode==='BS'){
+        const bsSel = document.getElementById('adm-bs').value;
+        num = pickNumberByBS(bsSel);
+      }else{
+        num = pickNumberByColor(mode);
+      }
+
+      const bs = (num>=5)?'Big':'Small';
+      const colors = getColors(num);
+      await db.ref(`wingo/${variant}/pendingResults/${String(period)}`).set({
+        num, bs, colors, ts: Date.now(), forced: true, admin: true
+      });
+      alert('Result set for running period ' + period + ' (num '+num+')');
+      document.getElementById('adminPanel').style.display='none';
+    }catch(e){
+      console.error(e);
+      alert('Failed to set result. Check network/Firebase rules.');
+    }
+  };
+
+  window.admClearCurrent = async function(){
+    try{
+      const {period} = computeTick();
+      // Only clear if we previously set (optional); otherwise remove anyway
+      await db.ref(`wingo/${variant}/pendingResults/${String(period)}`).remove();
+      alert('Cleared current period. System will randomize at end if untouched.');
+    }catch(e){
+      console.error(e);
+      alert('Failed to clear.');
+    }
+  };
+})();
+
+</script>
+</body>
+</html>
