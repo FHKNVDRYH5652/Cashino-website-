@@ -1,100 +1,148 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RATAN WIN - Home</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home - TashanWin Style (With Poster)</title>
   <style>
-    body{
-      margin:0;
-      font-family:Poppins, sans-serif;
-      background:#111;
-      color:#fff;
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #0d0d0d;
+      color: #fff;
+      padding-bottom: 80px;
     }
-    header{
-      background:#1c1c1c;
-      padding:10px 15px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+
+    .container {
+      padding: 15px;
     }
-    .logo{
-      font-size:22px;
-      font-weight:800;
-      background:linear-gradient(90deg,#ff7e22,#25b63c);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
+
+    /* Poster section */
+    .poster {
+      width: 100%;
+      height: 180px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     }
-    .flag{font-size:14px}
-    main{padding:10px;padding-bottom:90px}
-    .poster img{width:100%;border-radius:8px;margin-bottom:15px}
-    .section-title{font-size:16px;font-weight:600;margin:15px 0 10px}
-    .games{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:12px;
+    .poster img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
-    .games img{
-      width:100%;
-      border-radius:10px;
-      cursor:pointer;
-      display:block;
+
+    /* Games grid */
+    .games {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
     }
-    nav{
-      position:fixed;
-      bottom:0;left:0;right:0;
-      background:#1c1c1c;
-      display:flex;
-      justify-content:space-around;
-      padding:10px 5px;
-      border-top:1px solid #333;
-      gap:8px;
+
+    .game-box {
+      background: #1a1a1a;
+      border-radius: 12px;
+      overflow: hidden;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
-    nav a{
-      flex:1;
-      text-align:center;
-      text-decoration:none;
-      color:#fff;
-      font-size:14px;
-      padding:10px 0;
-      border-radius:6px;
-      background:#222;
-      transition:all 0.3s ease;
+
+    .game-box img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      display: block;
+      border-radius: 12px 12px 0 0;
     }
-    nav a.active{
-      background:linear-gradient(90deg,#ffb321,#ff7e22);
-      color:#111;
-      font-weight:600;
+
+    .game-box p {
+      margin: 8px 0;
+      font-size: 14px;
+      color: #f6c343;
+      font-weight: bold;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #1a1a1a;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 0;
+      border-top: 1px solid #2b2b2b;
+      z-index: 100;
+    }
+
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      color: #aaa;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .nav-item img {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      transition: 0.3s;
+      filter: brightness(0) saturate(100%) invert(77%) sepia(36%) saturate(438%) hue-rotate(9deg) brightness(102%) contrast(95%);
+    }
+
+    .nav-item.active img {
+      filter: brightness(1.3) saturate(200%) hue-rotate(10deg);
+    }
+
+    .nav-item.active {
+      color: #f6c343;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">RATAN WIN</div>
-    <div class="flag">🌐 EN</div>
-  </header>
-
-  <main>
+  <div class="container">
+    <!-- Poster Section -->
     <div class="poster">
-      <img src="poster.png" alt="Poster">
+      <img src="poster.png" alt="Poster" />
     </div>
 
-    <div class="section-title">Recommended Games</div>
+    <!-- Game Section -->
     <div class="games">
-      <a href="wingo.html"><img src="wingo.png" alt="Win Go"></a>
-      <img src="aviator.png" alt="Aviator">
-      <img src="chicken.png" alt="Chicken Road 2">
-      <img src="fortune.png" alt="Fortune Gems">
-      <img src="money.png" alt="Money Coming">
-      <img src="crash.png" alt="Go Rush">
+      <div class="game-box"><img src="wingo.png" alt="Wingo"/><p>Wingo</p></div>
+      <div class="game-box"><img src="aviator.png" alt="Aviator"/><p>Aviator</p></div>
+      <div class="game-box"><img src="chickenroad.png" alt="Chicken Road"/><p>Chicken Road</p></div>
+      <div class="game-box"><img src="fortunegems.png" alt="Fortune Gems"/><p>Fortune Gems</p></div>
+      <div class="game-box"><img src="moneycoming.png" alt="Money Coming"/><p>Money Coming</p></div>
+      <div class="game-box"><img src="crash.png" alt="Crash"/><p>Crash</p></div>
     </div>
-  </main>
+  </div>
 
-  <nav>
-    <a href="home.html" class="active">Home</a>
-    <a href="activity.html">Activity</a>
-    <a href="promotion.html">Promotion</a>
-    <a href="account.html">Account</a>
-  </nav>
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <a href="home.html" class="nav-item active">
+      <img src="home.png" alt="Home" />
+      <span>Home</span>
+    </a>
+    <a href="activity.html" class="nav-item">
+      <img src="activity.png" alt="Activity" />
+      <span>Activity</span>
+    </a>
+    <a href="promotion.html" class="nav-item">
+      <img src="promotion.png" alt="Promotion" />
+      <span>Promotion</span>
+    </a>
+    <a href="account.html" class="nav-item">
+      <img src="account.png" alt="Account" />
+      <span>Account</span>
+    </a>
+  </div>
 </body>
 </html>
