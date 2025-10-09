@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account - Ratan Win</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #000;
+      margin: 0;
+      padding: 0;
+      color: white;
+    }
+    .balance-box {
+      background: linear-gradient(90deg, #ff7e00, #ff3300);
+      padding: 15px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 5px;
+      margin: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .balance-box button {
+      background: white;
+      color: black;
+      border: none;
+      padding: 5px 15px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 10px;
+    }
+    .btn {
+      padding: 15px;
+      border-radius: 5px;
+      font-size: 16px;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn.gray { background: #333; color: white; }
+    .btn.green { background: #28a745; color: white; }
+    .btn.red { background: #dc3545; color: white; }
+    .btn.yellow { background: #ffc107; color: black; }
+    .full-btn {
+      margin: 10px;
+      background: #222;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: left;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .logout {
+      margin: 10px;
+      padding: 15px;
+      background: #ff0000;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="balance-box">
+    <span>Total Balance: ₹<span id="walletBalance">0</span></span>
+    <button onclick="enterWallet()">Enter Wallet</button>
+  </div>
+
+  <div class="grid-2">
+    <div class="btn gray" onclick="goTo('arwallet.html')">AR Wallet</div>
+    <div class="btn green" onclick="goTo('deposit.html')">Deposit</div>
+    <div class="btn red" onclick="goTo('withdraw.html')">Withdraw</div>
+    <div class="btn yellow" onclick="goTo('vip.html')">VIP</div>
+  </div>
+
+  <div class="full-btn" onclick="goTo('game-history.html')">Game History</div>
+  <div class="full-btn" onclick="goTo('transaction.html')">Transaction</div>
+  <div class="full-btn" onclick="goTo('deposit-history.html')">Deposit History</div>
+  <div class="full-btn" onclick="goTo('withdraw-history.html')">Withdraw History</div>
+  <div class="full-btn" onclick="goTo('notification.html')">Notification <span style="color:red;">84</span></div>
+  <div class="full-btn" onclick="goTo('gifts.html')">Gifts</div>
+  <div class="full-btn" onclick="goTo('tournament.html')">My Tournament</div>
+  <div class="full-btn" onclick="goTo('statistics.html')">Game Statistics</div>
+  <div class="full-btn" onclick="goTo('language.html')">Language <span style="float:right;">English</span></div>
+  <div class="full-btn" onclick="goTo('settings.html')">Settings</div>
+  <div class="full-btn" onclick="goTo('feedback.html')">Feedback</div>
+  <div class="full-btn" onclick="goTo('announcement.html')">Announcement</div>
+  <div class="full-btn" onclick="goTo('customer-service.html')">Customer Service</div>
+
+  <div class="logout" onclick="logout()">Log Out</div>
+
+  <script>
+    // Load balance from localStorage
+    function loadBalance() {
+      let balance = localStorage.getItem("walletBalance");
+      if (!balance) {
+        balance = 100; // Register bonus
+        localStorage.setItem("walletBalance", balance);
+      }
+      document.getElementById("walletBalance").innerText = balance;
+    }
+
+    // Navigation
+    function goTo(page) {
+      window.location.href = page;
+    }
+
+    // Wallet
+    function enterWallet() {
+      alert("Wallet Entered!");
+    }
+
+    // Logout
+    function logout() {
+      alert("You are logged out!");
+    }
+
+    loadBalance();
+  </script>
+</body>
+</html>
