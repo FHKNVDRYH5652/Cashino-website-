@@ -151,7 +151,7 @@
     localStorage.setItem('lastPendingDepositId', id);
 
     // Redirect to QR page (correct file name)
-    const url = 'qr-payment_PAGE_FINAL_v3.html?id=' + encodeURIComponent(id) +
+    const url = 'qr-payment_PAGE_FINAL.html?id=' + encodeURIComponent(id) +
                 '&amt=' + encodeURIComponent(amount) +
                 '&method=' + encodeURIComponent(selectedMethod);
     window.location.href = url;
