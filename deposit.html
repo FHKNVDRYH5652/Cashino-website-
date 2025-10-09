@@ -113,6 +113,11 @@
           let bal = parseFloat(localStorage.getItem('walletBalance')||'0');
           bal += parseFloat(h.amount);
           localStorage.setItem('walletBalance', money(bal));
+
+        // ✅ Update total deposit for gift condition sync
+        let total = parseFloat(localStorage.getItem('totalDeposits') || '0');
+        total += parseFloat(h.amount);
+        localStorage.setItem('totalDeposits', total);
           h.credited = true;
           changed = true;
         }
