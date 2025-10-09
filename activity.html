@@ -242,13 +242,13 @@
     // Redeem code with checks
     function redeemCode(){
       const code = document.getElementById('giftCode').value.trim();
-      if(!code) return alert('Enter a gift code');
+      if(!code) return showToast('Enter a gift code');
 
       const gift = codes[code];
-      if(!gift) return alert('Invalid code');
-      if(gift.used) return alert('Code already used');
+      if(!gift) return showToast('Invalid code');
+      if(gift.used) return showToast('Code already used');
       if(gift.condition && totalDeposits < gift.condition){
-        return alert('Deposit at least ₹' + gift.condition + ' to claim this code.');
+        return showToast('Deposit at least ₹' + gift.condition + ' to claim this code.');
       }
 
       // Update balances (sync account + wingo)
@@ -285,10 +285,10 @@
       const code = document.getElementById('adminCode').value.trim();
       const amount = parseFloat(document.getElementById('adminAmount').value || '0');
       const cond = parseFloat(document.getElementById('adminCond').value || '0');
-      if(!code || !amount) return alert('Please enter code and amount');
+      if(!code || !amount) return showToast('Please enter code and amount');
       codes[code] = { amount: amount, condition: cond, used:false };
       localStorage.setItem('giftCodes', JSON.stringify(codes));
-      alert('Code created');
+      showToast('Code created');
       closeAdmin();
     }
 
