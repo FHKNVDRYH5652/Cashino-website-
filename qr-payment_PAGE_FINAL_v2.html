@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Payment</title>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .qr-box {
+      background: #1f1f1f;
+      padding: 20px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+    .qr-box img {
+      width: 200px;
+      height: 200px;
+      margin-bottom: 10px;
+    }
+    .upi-id {
+      margin: 10px 0;
+      color: #ffcc00;
+      font-weight: bold;
+    }
+    .pay-options {
+      margin: 15px 0;
+    }
+    .pay-options button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 200px;
+      margin: 8px auto;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #ffcc00;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .pay-options img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+    .utr-input {
+      margin: 10px auto;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      width: 80%;
+      text-align: center;
+    }
+    .submit-btn {
+      margin-top: 15px;
+      padding: 12px 25px;
+      background: #ffcc00;
+      color: black;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Scan & Pay</h2>
+  <div class="qr-box">
+    <img id="qrImage" src="" alt="QR Code">
+    <div class="upi-id">UPI ID: qrperfect.k@ptaxis</div>
+    <div id="amountText"></div>
+  </div>
+
+  <div class="pay-options">
+    <button><img src="paytm.png" alt="Paytm"> Pay with Paytm</button>
+    <button><img src="phonepay.png" alt="PhonePe"> Pay with PhonePe</button>
+  </div>
+
+  <input type="text" id="utr" class="utr-input" placeholder="Enter UTR / Transaction ID">
+  <button class="submit-btn" onclick="submitUTR()">Submit</button>
+
+<script>
+  function getQueryParams() {
+    let params = {};
+    window.location.search.substr(1).split("&").forEach(function(item) {
+      let [key, value] = item.split("=");
+      params[key] = decodeURIComponent(value);
+    });
+    return params;
+  }
+
+  function submitUTR() {
+    let utr = document.getElementById("utr").value;
+    if (!utr) {
+      alert("Please enter UTR / Transaction ID");
+      return;
+    }
+    alert("Payment Success!");
+    window.location.href = "deposit_PAGE_FINAL_v2.html";
+  }
+
+  window.onload = function() {
+    let params = getQueryParams();
+    let amt = params["amt"];
+    document.getElementById("amountText").innerText = "You are paying ₹" + amt;
+    document.getElementById("qrImage").src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=qrperfect.k@ptaxis&am=" + amt;
+  }
+</script>
+</body>
+</html>
