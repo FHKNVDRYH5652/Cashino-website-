@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Withdraw</title>
+<style>
+  :root{
+    --bg:#0b0b0d;
+    --card:#171518;
+    --chip:#0f0e10;
+    --text:#f5e6c8;
+    --muted:#cbbfa6;
+    --accent:#ffcc66;
+    --danger:#ff5757;
+    --success:#2ad17b;
+    --info:#62a5ff;
+    --border:#29242c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;background:var(--bg);color:var(--text)}
+  header{position:sticky;top:0;z-index:20;background:#111014;padding:14px 16px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #1e1b21}
+  header h1{margin:0;font-size:22px;letter-spacing:.4px;color:#f6d9a3;font-weight:800}
+  header a{position:absolute;right:16px;top:14px;color:#f6d9a3;text-decoration:none;font-size:14px}
+  .page{padding:14px}
+  .wallet{background:linear-gradient(135deg,#5ce1ff,#00a4ff);border-radius:16px;color:#fff;padding:16px 18px;margin-bottom:14px}
+  .wallet .label{opacity:.9;font-size:15px}
+  .wallet .amt{margin-top:6px;font-size:30px;font-weight:900}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px}
+  .ar-head{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+  .ar-title{font-weight:800;font-size:18px}
+  .tile-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .tile{border-radius:14px;padding:18px 10px;text-align:center;background:#ffe099;color:#2a2a2a;font-weight:800;border:1px solid #ffe099}
+  .tile.disabled{background:#242124;color:#9a8e7e;border-color:#2f2833}
+  .tile .sub{display:block;margin-top:6px;font-weight:600;font-size:12px;opacity:.85}
+  .add-bank{display:flex;align-items:center;gap:12px;justify-content:center;height:88px;border:1px dashed #6a5c49;border-radius:14px;background:#161316;color:#9f8f7b}
+  .add-bank .plus{font-size:34px;border:2px dashed #7b6a55;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px}
+  .add-bank big{display:block;color:#d4c3a7}
+  .warn{margin-top:10px;text-align:center;color:#ff7070}
+  .input-wrap{background:#0f0e10;border:1px solid #272228;border-radius:16px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+  .input-wrap .icon{font-size:20px;color:#e8c37a}
+  .input{flex:1;border:none;background:transparent;color:var(--text);font-size:16px;outline:none}
+  .row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:15px;color:var(--muted)}
+  .pill{border:1px solid #584c3d;border-radius:10px;padding:6px 14px;font-weight:800;color:#e7d2a9}
+  .btn{width:100%;border:none;border-radius:999px;background:linear-gradient(180deg,#ffc85d,#ffb13c);color:#241b12;padding:14px;font-weight:900;font-size:18px;margin-top:12px}
+  .hint{border:1px solid var(--border);border-radius:14px;padding:12px;margin-top:12px;color:#cbbfa6;background:#151217}
+  .hint li{margin:10px 0}
+  .history-title{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:900;margin:6px 0 12px}
+  .history-card{background:#161318;border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:12px}
+  .hist-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .tag{background:#492426;color:#ffadad;padding:4px 10px;border-radius:10px;font-weight:800}
+  .status{font-weight:900}
+  .Pending{color:var(--info)} .Completed{color:var(--success)} .Rejected{color:var(--danger)}
+  /* Views */
+  .view{display:none} .view.active{display:block}
+  /* Choose bank list + modal styles */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:40}
+  .modal.show{display:flex}
+  .sheet{background:#141216;border-top-left-radius:16px;border-top-right-radius:16px;width:100%;max-height:85vh;overflow:auto;border-top:1px solid #2a232c}
+  .sheet .hd{position:sticky;top:0;background:#141216;padding:14px;border-bottom:1px solid #2a232c;display:flex;gap:10px;align-items:center}
+  .search{flex:1;border:1px solid #2c2630;background:#0f0e10;padding:10px;border-radius:10px;color:#e8dcc1}
+  .bank-item{padding:14px;border-bottom:1px solid #221c23}
+  .bank-item:hover{background:#1a171b}
+  .lock{opacity:.6;pointer-events:none}
+  /* Admin */
+  .admin-fab{position:fixed;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;background:#101012;color:#878286;display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid #2a2730;opacity:.35}
+  .admin-fab:hover{opacity:.9}
+  .admin-modal .sheet{max-width:520px;margin:auto;border:1px solid #2a232c;border-radius:14px}
+  .admin-login{padding:14px}
+  .admin-list table{width:100%;border-collapse:collapse;color:#d9ccb3;font-size:13px}
+  .admin-list th,.admin-list td{border-bottom:1px solid #2a232c;padding:8px;text-align:left}
+  .admin-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .admin-actions select,.admin-actions input{background:#0f0e10;border:1px solid #2b2530;color:#e8dcc1;border-radius:8px;padding:8px}
+  .admin-actions button{background:#ffc656;color:#201810;border:none;border-radius:8px;padding:8px 12px;font-weight:800}
+</style>
+</head>
+<body>
+<header>
+  <h1>Withdraw</h1>
+  <a href="#" id="openHistoryTop">Withdrawal history</a>
+</header>
+
+<!-- MAIN VIEW -->
+<div class="page view active" id="view-main">
+  <!-- Wallet -->
+  <div class="wallet">
+    <div class="label">Available balance</div>
+    <div class="amt">₹<span id="walletAmt">0.00</span></div>
+  </div>
+
+  <!-- ARPay note + tiles (only Bank Card enabled) -->
+  <div class="card">
+    <div class="ar-head">
+      <div style="width:34px;height:34px;border-radius:8px;background:#201a11;display:flex;align-items:center;justify-content:center">🏦</div>
+      <div>
+        <div class="ar-title">ARPay</div>
+        <div style="color:#a9977c">Supports UPI for fast payment, and bonuses for withdrawals</div>
+      </div>
+      <div style="margin-left:auto;background:#3a2d20;color:#ffd37e;font-weight:900;border-radius:10px;padding:4px 8px">1%</div>
+    </div>
+    <div class="tile-row">
+      <div class="tile" id="bankTile">BANK CARD<span class="sub">Only bank supported</span></div>
+      <div class="tile disabled">UPI<span class="sub">Not available</span></div>
+      <div class="tile disabled">USDT<span class="sub">Not available</span></div>
+    </div>
+  </div>
+
+  <!-- Add bank / saved bank -->
+  <div class="card" id="benef-card">
+    <div id="benef-empty">
+      <div class="add-bank" onclick="openBankForm()">
+        <div class="plus">+</div>
+        <div>
+          <big>Add a bank account number</big>
+        </div>
+      </div>
+      <div class="warn">Need to add beneficiary information to be able to withdraw money</div>
+    </div>
+    <div id="benef-saved" class="view">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:28px;height:28px;border-radius:6px;background:#201a11;display:flex;align-items:center;justify-content:center">🔥</div>
+        <div style="flex:1">
+          <div id="savedBankName" style="color:#e7d2a9;font-weight:800;margin-bottom:4px">Bank name</div>
+          <div style="color:#b9ad95" id="savedBankMasked">000000****0000</div>
+        </div>
+        <div style="opacity:.5">›</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Amount -->
+  <div class="card">
+    <div class="input-wrap">
+      <div class="icon">₹</div>
+      <input id="amount" type="number" inputmode="numeric" class="input" placeholder="Please enter the amount" oninput="updateReceive()">
+    </div>
+    <div class="row">
+      <div>Withdrawable balance <b>₹<span id="withdrawable">0.00</span></b></div>
+      <button class="pill" onclick="fillAll()">All</button>
+    </div>
+    <div class="row">
+      <div>Withdrawal amount received</div>
+      <div style="font-weight:900;color:#ffcc66">₹<span id="receive">0.00</span></div>
+    </div>
+    <button class="btn" onclick="submitWithdraw()">Withdraw</button>
+  </div>
+
+  <!-- Tips -->
+  <div class="card hint">
+    <ul style="padding-left:16px;margin:0">
+      <li>Need to bet <span style="color:#ff6a6a">₹0.00</span> to be able to withdraw</li>
+      <li>Withdraw time <span style="color:#ff6a6a">00:00-23:59</span></li>
+      <li>Inday Remaining Withdrawal Times<span style="margin-left:6px">3</span></li>
+      <li>Withdrawal amount range <span style="color:#ff6a6a">₹500.00-₹50,000.00</span></li>
+      <li>Please confirm your beneficial account information before withdrawing. If your information is incorrect, our company will not be liable for the amount of loss</li>
+      <li>If your beneficial information is incorrect, please contact customer service</li>
+    </ul>
+  </div>
+
+  <!-- History preview -->
+  <div class="card">
+    <div class="history-title">📄 Withdrawal history</div>
+    <div id="hist-list"></div>
+  </div>
+</div>
+
+<!-- ADD BANK VIEW (sheet modal) -->
+<div class="modal" id="modal-add">
+  <div class="sheet">
+    <div class="page">
+      <h2 style="margin:6px 0 12px;color:#f6d9a3">Add a bank account number</h2>
+      <div class="card" style="padding:0">
+        <button class="tile" style="width:100%;border-radius:14px 14px 0 0" onclick="openChooseBank()">Please select a bank</button>
+        <div style="padding:12px">
+          <div style="display:flex;align-items:center;gap:10px;margin:10px 0"><span>👤</span><input id="fullname" class="search" placeholder="Please enter the recipient's name"></div>
+          <div style="display:flex;align-items:center;gap:10px;margin:10px 0"><span>💳</span><input id="accno" class="search" placeholder="Please enter your bank account number"></div>
+          <div style="display:flex;align-items:center;gap:10px;margin:10px 0"><span>📞</span><input id="phone" class="search" placeholder="Please enter your phone number"></div>
+          <div style="display:flex;align-items:center;gap:10px;margin:10px 0"><span>🔑</span><input id="ifsc" class="search" placeholder="Please enter IFSC code"></div>
+          <button class="btn" onclick="saveBank()">Save</button>
+          <button class="btn" style="margin-top:8px;background:#2a2530;color:#e8dcc1" onclick="closeAdd()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHOOSE BANK SHEET -->
+<div class="modal" id="modal-choose">
+  <div class="sheet">
+    <div class="hd">
+      <input id="bankSearch" class="search" placeholder="Search bank" oninput="filterBanks()">
+    </div>
+    <div id="bankList"></div>
+  </div>
+</div>
+
+<!-- FULL HISTORY VIEW -->
+<div class="modal" id="modal-history">
+  <div class="sheet">
+    <div class="hd">
+      <div style="font-weight:900;color:#f6d9a3">Withdrawal history</div>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <input type="date" id="fromDate" class="search" style="max-width:150px">
+        <input type="date" id="toDate" class="search" style="max-width:150px">
+        <select id="statusFilter" class="search" style="max-width:150px">
+          <option value="">All</option>
+          <option>Pending</option>
+          <option>Completed</option>
+          <option>Rejected</option>
+        </select>
+      </div>
+    </div>
+    <div class="page">
+      <div id="hist-full"></div>
+      <button class="btn" onclick="closeHistory()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN floating button -->
+<div class="admin-fab" title="admin" onclick="openAdmin()">×</div>
+<div class="modal admin-modal" id="modal-admin">
+  <div class="sheet">
+    <div class="admin-login" id="admin-login">
+      <h3 style="margin:4px 0 10px;color:#f6d9a3">Admin Panel</h3>
+      <input type="password" id="admin-pass" class="search" placeholder="Password">
+      <button class="btn" style="margin-top:10px" onclick="loginAdmin()">Login</button>
+      <div id="admin-msg" style="color:#ff7a7a;margin-top:8px"></div>
+    </div>
+    <div class="admin-list view" id="admin-panel">
+      <div class="page">
+        <table>
+          <thead><tr><th>Order</th><th>Bank</th><th>Amount</th><th>Status</th><th>Remark</th><th>Action</th></tr></thead>
+          <tbody id="admin-rows"></tbody>
+        </table>
+        <button class="btn" onclick="closeAdmin()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- Helpers & Storage ----------
+const money = n => (+(n||0)).toFixed(2);
+const get = k => JSON.parse(localStorage.getItem(k)||'null');
+const set = (k,v) => localStorage.setItem(k, JSON.stringify(v));
+const BAL_KEY = 'walletBalance'; // shared with deposit/account/wingo
+
+// ---------- Init ----------
+const BANKS = [
+"ABHYUDAYA COOPERATIVE BANK LIMITED","AHMEDABAD MERCANTILE COOPERATIVE BANK",
+"AHMEDNAGAR MERCHANTS CO-OP BANK LTD","AIRTEL PAYMENTS BANK LIMITED",
+"AKOLA JANATA COMMERCIAL COOPERATIVE BANK","ALMORA URBAN COOPERATIVE BANK LIMITED",
+"AMBARNATH JAIHIND COOP BANK LTD AMBARNATH","ANDHRA PRADESH GRAMEENA VIKAS BANK",
+"ANDHRA PRAGATHI GRAMEENA BANK","APNA SAHAKARI BANK LIMITED","AXIS BANK","BANK OF BARODA",
+"BANDHAN BANK","BANK OF INDIA","BANK OF MAHARASHTRA","BARCLAYS BANK","CANARA BANK",
+"CATHOLIC SYRIAN BANK","CENTRAL BANK OF INDIA","CITI BANK","CITY UNION BANK",
+"CORPORATION BANK","DBS BANK","DCB BANK","DENA BANK","DEUTSCHE BANK","FEDERAL BANK",
+"HDFC BANK","HSBC BANK","ICICI BANK","IDBI BANK","IDFC FIRST BANK","INDIAN BANK",
+"INDIAN OVERSEAS BANK","INDUSIND BANK","JAMMU AND KASHMIR BANK","JANATA SAHAKARI BANK",
+"KARUR VYSYA BANK","KARNATAKA BANK","KOTAK MAHINDRA BANK","PUNJAB NATIONAL BANK",
+"PAYTM PAYMENTS BANK","RAJKOT NAGARIK SAHAKARI BANK","RBL BANK","SOUTH INDIAN BANK",
+"STATE BANK OF INDIA","SYNDICATE BANK","UCO BANK","UNION BANK OF INDIA","YES BANK"
+];
+
+function ensureBalance(){
+  if(localStorage.getItem(BAL_KEY)===null){ localStorage.setItem(BAL_KEY,'0'); }
+}
+function syncUI(){
+  const bal = parseFloat(localStorage.getItem(BAL_KEY)||'0');
+  document.getElementById('walletAmt').textContent = money(bal);
+  document.getElementById('withdrawable').textContent = money(bal);
+  document.getElementById('receive').textContent = money(parseFloat(document.getElementById('amount').value||0));
+  const acc = get('savedBank');
+  if(acc){
+    document.getElementById('benef-empty').style.display='none';
+    document.getElementById('benef-saved').classList.add('active');
+    document.getElementById('savedBankName').textContent = acc.bank;
+    const masked = acc.accno.replace(/\d(?=\d{4})/g,'*');
+    document.getElementById('savedBankMasked').textContent = masked;
+  }
+  renderHistoryPreview();
+}
+ensureBalance(); syncUI();
+document.getElementById('openHistoryTop').onclick = ()=>openHistory();
+
+// ---------- Amount helpers ----------
+function fillAll(){
+  const bal = parseFloat(localStorage.getItem(BAL_KEY)||'0');
+  document.getElementById('amount').value = Math.min(50000,Math.max(0,Math.floor(bal)));
+  updateReceive();
+}
+function updateReceive(){
+  const v = parseFloat(document.getElementById('amount').value||0);
+  document.getElementById('receive').textContent = money(v);
+}
+
+// ---------- Add bank flow ----------
+function openBankForm(){
+  if(get('savedBank')){return;} // locked after save
+  document.getElementById('modal-add').classList.add('show');
+}
+function closeAdd(){ document.getElementById('modal-add').classList.remove('show'); }
+
+let CHOSEN_BANK = '';
+function openChooseBank(){
+  document.getElementById('modal-choose').classList.add('show');
+  const list = document.getElementById('bankList');
+  list.innerHTML = BANKS.map(b=>`<div class='bank-item' onclick="chooseBank('${b.replace(/'/g,"\\'")}')">${b}</div>`).join('');
+}
+function closeChoose(){ document.getElementById('modal-choose').classList.remove('show'); }
+function filterBanks(){
+  const q = (document.getElementById('bankSearch').value||'').toLowerCase();
+  const list = document.getElementById('bankList');
+  list.innerHTML = BANKS.filter(b=>b.toLowerCase().includes(q)).map(b=>`<div class='bank-item' onclick="chooseBank('${b.replace(/'/g,"\\'")}')">${b}</div>`).join('');
+}
+function chooseBank(name){
+  CHOSEN_BANK = name;
+  closeChoose();
+  document.querySelector('#modal-add .tile').textContent = name;
+}
+
+function saveBank(){
+  if(get('savedBank')){alert('Bank already added'); return;}
+  const bank = CHOSEN_BANK || document.querySelector('#modal-add .tile').textContent;
+  const fullname = document.getElementById('fullname').value.trim();
+  const accno = document.getElementById('accno').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const ifsc = document.getElementById('ifsc').value.trim();
+  if(!bank || bank==='Please select a bank' || !fullname || !accno || !phone || !ifsc){
+    alert('Please fill all details'); return;
+  }
+  const data = {bank, fullname, accno, phone, ifsc, createdAt: Date.now()};
+  set('savedBank', data);
+  closeAdd();
+  syncUI();
+}
+
+// ---------- Withdraw ----------
+function submitWithdraw(){
+  const acc = get('savedBank'); if(!acc){ alert('Please add bank account first'); return; }
+  const amt = parseFloat(document.getElementById('amount').value||0);
+  const bal = parseFloat(localStorage.getItem(BAL_KEY)||'0');
+  if(amt < 500 || amt > 50000){ alert('Withdrawal amount range ₹500-₹50,000'); return; }
+  if(amt > bal){ alert('Insufficient balance'); return; }
+  // Deduct immediately
+  localStorage.setItem(BAL_KEY, String(bal-amt));
+  // Create order
+  const id = 'WD'+new Date().toISOString().replace(/[-:.TZ]/g,'').slice(0,14) + Math.random().toString(16).slice(2,6);
+  const rec = {id, amount: amt, bank: acc.bank, status:'Pending', remark:'', time: new Date().toISOString()};
+  const hist = get('withdrawHist') || [];
+  hist.push(rec); set('withdrawHist', hist);
+  // Reset amount input
+  document.getElementById('amount').value=''; updateReceive();
+  // UI
+  syncUI();
+  alert('Withdrawal submitted. Waiting for review.');
+}
+
+// ---------- History renderers ----------
+function renderCard(h){
+  const dt = new Date(h.time);
+  const tstr = dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,'0')+"-"+String(dt.getDate()).padStart(2,'0')+" "+String(dt.getHours()).padStart(2,'0')+":"+String(dt.getMinutes()).padStart(2,'0')+":"+String(dt.getSeconds()).padStart(2,'0');
+  return `<div class="history-card">
+    <div class="hist-head"><span class="tag">Withdraw</span><span class="status ${h.status}">${h.status}</span></div>
+    <div class="row"><div>Balance</div><div>₹${money(h.amount)}</div></div>
+    <div class="row"><div>Type</div><div>BANK CARD</div></div>
+    <div class="row"><div>Time</div><div>${tstr}</div></div>
+    <div class="row"><div>Order number</div><div style="font-family:monospace">${h.id}</div></div>
+    ${h.remark?`<div class="row"><div>Remarks</div><div>${h.remark}</div></div>`:''}
+  </div>`;
+}
+function renderHistoryPreview(){
+  const hist = (get('withdrawHist')||[]).slice().reverse();
+  document.getElementById('hist-list').innerHTML = hist.slice(0,3).map(renderCard).join('') || `<div style="opacity:.6">No records</div>`;
+}
+function openHistory(){
+  document.getElementById('modal-history').classList.add('show');
+  renderHistoryFull();
+}
+function closeHistory(){ document.getElementById('modal-history').classList.remove('show'); }
+document.getElementById('fromDate').onchange = renderHistoryFull;
+document.getElementById('toDate').onchange = renderHistoryFull;
+document.getElementById('statusFilter').onchange = renderHistoryFull;
+function renderHistoryFull(){
+  const hist = (get('withdrawHist')||[]).slice().reverse();
+  const s = document.getElementById('statusFilter').value;
+  const fd = document.getElementById('fromDate').value;
+  const td = document.getElementById('toDate').value;
+  const f1 = fd? new Date(fd+"T00:00:00Z").getTime(): -Infinity;
+  const f2 = td? new Date(td+"T23:59:59Z").getTime(): Infinity;
+  const out = hist.filter(h=>(!s||h.status===s) && (new Date(h.time).getTime()>=f1) && (new Date(h.time).getTime()<=f2));
+  document.getElementById('hist-full').innerHTML = out.map(renderCard).join('') || `<div style="opacity:.6">No records</div>`;
+}
+
+// ---------- Admin Panel ----------
+function openAdmin(){ document.getElementById('modal-admin').classList.add('show'); }
+function closeAdmin(){ document.getElementById('modal-admin').classList.remove('show'); }
+function loginAdmin(){
+  const p = document.getElementById('admin-pass').value;
+  if(p==='456'){
+    document.getElementById('admin-login').classList.add('lock');
+    document.getElementById('admin-login').style.display='none';
+    document.getElementById('admin-panel').classList.add('active');
+    renderAdmin();
+  }else{
+    document.getElementById('admin-msg').textContent = 'Wrong password';
+  }
+}
+function renderAdmin(){
+  const rows = (get('withdrawHist')||[]).map(h=>`
+    <tr>
+      <td>${h.id}</td>
+      <td>${h.bank}</td>
+      <td>₹${money(h.amount)}</td>
+      <td>${h.status}</td>
+      <td>${h.remark||''}</td>
+      <td>
+        <div class="admin-actions">
+          <select id="st-${h.id}">
+            <option ${h.status==='Pending'?'selected':''}>Pending</option>
+            <option ${h.status==='Completed'?'selected':''}>Completed</option>
+            <option ${h.status==='Rejected'?'selected':''}>Rejected</option>
+          </select>
+          <input id="rm-${h.id}" placeholder="Remark">
+          <button onclick="saveAdmin('${h.id}')">Save</button>
+        </div>
+      </td>
+    </tr>`).join('');
+  document.getElementById('admin-rows').innerHTML = rows || '<tr><td colspan="6" style="opacity:.7">No records</td></tr>';
+}
+function saveAdmin(id){
+  const hist = get('withdrawHist')||[];
+  const it = hist.find(x=>x.id===id); if(!it) return;
+  it.status = document.getElementById('st-'+id).value;
+  it.remark = document.getElementById('rm-'+id).value;
+  set('withdrawHist', hist);
+  renderAdmin(); renderHistoryPreview(); renderHistoryFull();
+}
+
+</script>
+</body>
+</html>
