@@ -120,5 +120,115 @@
       window.location.href = 'home.html'; // after register redirect to home
     });
   </script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
+    authDomain: "terminal-xxrr.firebaseapp.com",
+    databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "terminal-xxrr",
+    storageBucket: "terminal-xxrr.firebasestorage.app",
+    messagingSenderId: "722753278120",
+    appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
+    measurementId: "G-E3MZH3E1K5"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  function toast(msg){
+    let t = document.getElementById('__reg_toast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = '__reg_toast';
+      t.style.position = 'fixed';
+      t.style.left = '50%';
+      t.style.bottom = '18%';
+      t.style.transform = 'translateX(-50%)';
+      t.style.background = 'rgba(0,0,0,0.7)';
+      t.style.color = '#fff';
+      t.style.padding = '10px 16px';
+      t.style.borderRadius = '10px';
+      t.style.zIndex = 99999;
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(()=> t.style.display = 'none', 2500);
+  }
+
+  async function registerUser(phone, password){
+    const dbRef = ref(db);
+    const snap = await get(child(dbRef, "users"));
+    if(snap.exists()){
+      const users = snap.val();
+      for(const uid in users){
+        if(users[uid] && users[uid].phone === phone){
+          return { ok:false, err:"This number is already registered." };
+        }
+      }
+    }
+    const uid = "UID" + Date.now().toString().slice(-6) + Math.floor(Math.random()*900).toString();
+    const balance = 100;
+    await set(ref(db, "users/" + uid), {
+      uid: uid,
+      phone: phone,
+      password: password,
+      balance: balance
+    });
+    return { ok:true, uid:uid, balance:balance };
+  }
+
+  function findRegisterInputs(){
+    const inputs = document.querySelectorAll('input');
+    let phoneEl=null, passEl=null, btn=null;
+    for(const el of inputs){
+      const t = (el.getAttribute('type')||'').toLowerCase();
+      const ph = (el.getAttribute('placeholder')||'').toLowerCase();
+      const id = (el.id||'').toLowerCase();
+      const name = (el.name||'').toLowerCase();
+      if(!phoneEl && (t==='tel' || ph.includes('phone') || ph.includes('number') || id.includes('phone') || name.includes('phone') )) phoneEl = el;
+      if(!passEl && (t==='password' || ph.includes('password') || id.includes('pass') || name.includes('pass'))) passEl = el;
+    }
+    const buttons = document.querySelectorAll('button, input[type="button"], input[type="submit"]');
+    for(const b of buttons){
+      const txt = (b.textContent || b.value || '').toLowerCase();
+      const cls = (b.className||'').toLowerCase();
+      if(!btn && (txt.includes('register') || cls.includes('register') || (b.id||'').toLowerCase().includes('register'))) btn = b;
+    }
+    if(!btn) btn = document.querySelector('button, input[type="submit"], input[type="button"]');
+    return { phoneEl, passEl, btn };
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const { phoneEl, passEl, btn } = findRegisterInputs();
+    if(!phoneEl || !passEl || !btn){
+      console.warn('Register script: could not auto-detect inputs/buttons. Please ensure your register form has phone and password inputs and a register button.');
+      return;
+    }
+    btn.addEventListener('click', async (e)=>{
+      e.preventDefault();
+      const phone = phoneEl.value.trim();
+      const password = passEl.value.trim();
+      if(!phone || !password){ toast('Please fill all fields'); return; }
+      try{
+        const res = await registerUser(phone, password);
+        if(!res.ok){ toast(res.err); return; }
+        localStorage.setItem('uid', res.uid);
+        localStorage.setItem('phone', phone);
+        localStorage.setItem('balance', res.balance);
+        toast('Registration successful');
+        setTimeout(()=> window.location.href = 'home.html', 1200);
+      }catch(err){
+        console.error(err);
+        toast('Registration failed');
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
