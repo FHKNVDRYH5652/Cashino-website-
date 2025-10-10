@@ -440,7 +440,7 @@ function saveAdmin(id){
 
 </script>
 
-<!-- 🔥 Firebase Sync Addon (non-destructive) -->
+<!-- 🔥 Firebase Live Sync System -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, push, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -459,77 +459,98 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// ---- Send withdrawal request to Firebase ----
-window.submitWithdrawToFirebase = function (rec) {
+// 🧾 Save Withdraw Request (Firebase + LocalStorage)
+window.submitWithdrawToFirebase = function(rec) {
   const reqRef = ref(db, 'withdrawRequests/' + rec.id);
   set(reqRef, rec);
 };
 
-// Hook into existing submitWithdraw()
+// Override original submitWithdraw() safely
 const oldSubmit = window.submitWithdraw;
-window.submitWithdraw = function () {
+window.submitWithdraw = function() {
   const acc = JSON.parse(localStorage.getItem('savedBank'));
   const amt = parseFloat(document.getElementById('amount').value||0);
   const bal = parseFloat(localStorage.getItem('walletBalance')||'0');
   if(!acc){ alert('Please add bank account first'); return; }
   if(amt < 500 || amt > 50000){ alert('Withdrawal amount range ₹500-₹50,000'); return; }
   if(amt > bal){ alert('Insufficient balance'); return; }
+
   const id = 'WD'+new Date().toISOString().replace(/[-:.TZ]/g,'').slice(0,14) + Math.random().toString(16).slice(2,6);
   const rec = {
     id, amount: amt, bank: acc.bank, fullname: acc.fullname, accno: acc.accno,
     ifsc: acc.ifsc, phone: acc.phone, status:'Pending', remark:'', time: new Date().toISOString()
   };
-  // Save locally (old logic)
-  if (typeof oldSubmit === 'function') oldSubmit();
+
+  // Save locally (old system)
+  const hist = JSON.parse(localStorage.getItem('withdrawHist')||'[]');
+  hist.push(rec);
+  localStorage.setItem('withdrawHist', JSON.stringify(hist));
+  localStorage.setItem('walletBalance', String(bal-amt));
+
   // Send to Firebase
   submitWithdrawToFirebase(rec);
+  alert('Withdrawal submitted successfully!');
 };
 
-// ---- Admin panel live sync ----
-window.loadFirebaseAdmin = function () {
+// 🟢 Realtime Firebase listener for all users (live updates)
+function loadFirebaseWithdraws(){
   const listRef = ref(db, 'withdrawRequests');
   onValue(listRef, (snapshot) => {
     const data = snapshot.val() || {};
-    const tbody = document.getElementById('admin-rows');
-    if (!tbody) return;
-    tbody.innerHTML = Object.values(data).reverse().map(r => `
-      <tr>
-        <td>${r.id}</td>
-        <td>${r.bank}<br><small>${r.fullname}</small></td>
-        <td>₹${r.amount}</td>
-        <td>${r.status}</td>
-        <td>${r.remark||''}</td>
-        <td>
-          <div class='admin-actions'>
-            <select id='st-${r.id}'>
-              <option ${r.status==='Pending'?'selected':''}>Pending</option>
-              <option ${r.status==='Completed'?'selected':''}>Completed</option>
-              <option ${r.status==='Rejected'?'selected':''}>Rejected</option>
-            </select>
-            <input id='rm-${r.id}' placeholder='Remark' value='${r.remark||''}'>
-            <button onclick="saveFirebaseAdmin('${r.id}')">Save</button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
+    const histArray = Object.values(data).reverse();
+    localStorage.setItem('withdrawHist', JSON.stringify(histArray));
+    if(document.getElementById('hist-list')) renderHistoryPreview();
+    if(document.getElementById('hist-full')) renderHistoryFull();
+    if(document.getElementById('admin-rows')) renderFirebaseAdmin(histArray);
   });
+}
+
+// 🧩 Admin panel live renderer
+window.renderFirebaseAdmin = function(data){
+  const tbody = document.getElementById('admin-rows');
+  if(!tbody) return;
+  tbody.innerHTML = data.map(h=>`
+    <tr>
+      <td>${h.id}</td>
+      <td>${h.bank}<br><small>${h.fullname}</small></td>
+      <td>₹${h.amount}</td>
+      <td>${h.status}</td>
+      <td>${h.remark||''}</td>
+      <td>
+        <div class="admin-actions">
+          <select id="st-${h.id}">
+            <option ${h.status==='Pending'?'selected':''}>Pending</option>
+            <option ${h.status==='Completed'?'selected':''}>Completed</option>
+            <option ${h.status==='Rejected'?'selected':''}>Rejected</option>
+          </select>
+          <input id="rm-${h.id}" placeholder="Remark" value="${h.remark||''}">
+          <button onclick="saveFirebaseAdmin('${h.id}')">Save</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
 };
 
-// ---- Save admin updates ----
-window.saveFirebaseAdmin = function (id) {
-  const status = document.getElementById('st-'+id)?.value || 'Pending';
-  const remark = document.getElementById('rm-'+id)?.value || '';
+// 💾 Save Admin updates (status/remark)
+window.saveFirebaseAdmin = function(id){
+  const st = document.getElementById('st-'+id)?.value || 'Pending';
+  const rm = document.getElementById('rm-'+id)?.value || '';
   const reqRef = ref(db, 'withdrawRequests/' + id);
-  update(reqRef, { status, remark });
-  alert('Updated successfully on Firebase');
+  update(reqRef, {status: st, remark: rm});
+  alert('Updated successfully in Firebase');
 };
 
-// Auto start Firebase admin sync after login success
+// 🧠 Hook Firebase after admin login success
 const oldLoginAdmin = window.loginAdmin;
-window.loginAdmin = function () {
-  if (typeof oldLoginAdmin === 'function') oldLoginAdmin();
-  setTimeout(() => { loadFirebaseAdmin(); }, 1500);
+window.loginAdmin = function(){
+  if(typeof oldLoginAdmin === 'function') oldLoginAdmin();
+  setTimeout(()=>loadFirebaseWithdraws(), 1000);
 };
+
+// 🔁 Auto load realtime updates for everyone
+window.addEventListener('load', ()=>{
+  loadFirebaseWithdraws();
+});
 </script>
 
 </body>
