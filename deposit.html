@@ -61,6 +61,7 @@
 
 <script>
   let selectedMethod = null;
+
   function money(n){ return (+(n||0)).toFixed(2); }
 
   function loadWallet(){
@@ -77,7 +78,8 @@
   }
 
   function setAmount(a){
-    document.getElementById('customAmount').value = a;
+    const el = document.getElementById('customAmount');
+    el.value = a;
   }
 
   function getHistory(){
@@ -100,28 +102,37 @@
     }).join('') || '<p>No history yet</p>';
   }
 
-  async function processPendingDeposits(){
+  function processPendingDeposits(){
     let his = getHistory();
     let changed = false;
     const now = Date.now();
-    for (let h of his) {
+    his.forEach(h => {
       if(h.status==='Pending' && h.unlockAt && now >= h.unlockAt){
         h.status = 'Success';
         if(!h.credited){
           let bal = parseFloat(localStorage.getItem('walletBalance')||'0');
           bal += parseFloat(h.amount);
           localStorage.setItem('walletBalance', money(bal));
-          await updateFirebaseBalance(bal);
+
+          // ✅ Update total deposit for gift condition sync (local)
+          let total = parseFloat(localStorage.getItem('totalDeposits') || '0');
+          total += parseFloat(h.amount);
+          localStorage.setItem('totalDeposits', total);
+
+          // Sync to Firebase (balance, wingoBalance, totalDeposits)
+          try{ updateFirebaseBalance(bal, parseFloat(h.amount)); }catch(e){ console.error('firebase credit error',e); }
+
           h.credited = true;
           changed = true;
         }
       }
-    }
+    });
     if(changed) setHistory(his);
     if(changed){ loadWallet(); renderHistory(); }
   }
 
   function deposit(){
+    // default to QR Pay if not chosen
     if(!selectedMethod){ selectMethod('QR Pay'); }
     const amtEl = document.getElementById('customAmount');
     const amount = parseInt(amtEl.value, 10);
@@ -129,6 +140,7 @@
       alert('Amount must be between 200 and 50000');
       return;
     }
+
     const id = 'RC' + Date.now();
     const entry = {
       id,
@@ -144,18 +156,93 @@
     setHistory(his);
     renderHistory();
 
-    // ✅ Redirect directly to qr.html page with parameters
-    const url = `qr.html?id=${encodeURIComponent(id)}&amt=${encodeURIComponent(amount)}&method=${encodeURIComponent(selectedMethod)}`;
+    // Persist last pending id (optional)
+    localStorage.setItem('lastPendingDepositId', id);
+
+    // Redirect to QR page (correct file name)
+    const url = 'qr-payment_PAGE_FINAL.html?id=' + encodeURIComponent(id) +
+                '&amt=' + encodeURIComponent(amount) +
+                '&method=' + encodeURIComponent(selectedMethod);
     window.location.href = url;
   }
 
+  // init
   loadWallet();
   renderHistory();
   processPendingDeposits();
   setInterval(processPendingDeposits, 1000);
 </script>
 
-<!-- ✅ Firebase Wallet Sync -->
+<!-- Firebase sync script: watches localStorage 'walletBalance' and syncs delta to Firebase users/{uid}/balance -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
+    authDomain: "terminal-xxrr.firebaseapp.com",
+    databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "terminal-xxrr",
+    storageBucket: "terminal-xxrr.firebasestorage.app",
+    messagingSenderId: "722753278120",
+    appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
+    measurementId: "G-E3MZH3E1K5"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // parse numbers safely (handles formatted strings)
+  function parseNumber(v){
+    if(v===null || v===undefined) return 0;
+    try{
+      const s = String(v).replace(/[^\d.-]/g,'');
+      return parseFloat(s) || 0;
+    }catch(e){ return 0; }
+  }
+
+  (function(){
+    let lastLocal = parseNumber(localStorage.getItem('walletBalance') || localStorage.getItem('balance') || '0');
+    let syncing = false;
+
+    async function syncIfNeeded(){
+      if(syncing) return;
+      const uid = localStorage.getItem('uid');
+      if(!uid) return;
+      const currentLocal = parseNumber(localStorage.getItem('walletBalance') || localStorage.getItem('balance') || '0');
+      if(currentLocal <= lastLocal) {
+        lastLocal = currentLocal;
+        return;
+      }
+      const delta = currentLocal - lastLocal;
+      if(delta <= 0) return;
+      syncing = true;
+      try{
+        const userRef = ref(db, 'users/' + uid + '/balance');
+        const snap = await get(userRef);
+        const firebaseBal = snap.exists() ? parseNumber(snap.val()) : 0;
+        const newBal = firebaseBal + delta;
+        await update(ref(db, 'users/' + uid), { balance: newBal });
+        lastLocal = currentLocal;
+        console.log('Firebase balance updated by delta', delta, 'newBal', newBal);
+      }catch(err){
+        console.error('Sync error', err);
+      }finally{
+        syncing = false;
+      }
+    }
+
+    setInterval(syncIfNeeded, 2000);
+    window.addEventListener('storage', (e)=>{
+      if(e.key === 'walletBalance' || e.key === 'balance'){
+        setTimeout(syncIfNeeded, 300);
+      }
+    });
+  })();
+</script>
+
+
+<!-- Firebase (compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
 <script>
@@ -169,18 +256,30 @@ const firebaseConfig = {
   appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
   measurementId: "G-E3MZH3E1K5"
 };
-firebase.initializeApp(firebaseConfig);
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+</script>
 
-// Update Firebase user balance + wingoBalance
-async function updateFirebaseBalance(newBal){
-  const uid = localStorage.getItem('uid');
-  if(!uid) return;
+
+<script>
+async function updateFirebaseBalance(newBal, amt){
   try{
-    await db.ref('users/'+uid).update({balance:newBal, wingoBalance:newBal});
-    console.log('Firebase balance updated → ₹'+newBal);
+    const uid = localStorage.getItem('uid');
+    if(!uid) {
+      // still keep totalDeposits local for guest users
+      console.log('No uid - skipping firebase update');
+      return;
+    }
+    const userRef = db.ref('users/' + uid);
+    const snap = await userRef.get();
+    let current = snap.exists() ? (snap.val().balance || 0) : 0;
+    // compute new totalDeposits
+    let total = snap.exists() && snap.val().totalDeposits ? Number(snap.val().totalDeposits) : Number(localStorage.getItem('totalDeposits')||0);
+    total = Number(total) + Number(amt || 0);
+    await userRef.update({ balance: Number(newBal), wingoBalance: Number(newBal), totalDeposits: total });
+    console.log('Firebase updated balance and totalDeposits', newBal, total);
   }catch(err){
-    console.error('Firebase update error', err);
+    console.error('updateFirebaseBalance error', err);
   }
 }
 </script>
