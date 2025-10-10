@@ -1,169 +1,257 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Account</title>
-<style>
-body {
-  margin: 0;
-  font-family: "Poppins", sans-serif;
-  background-color: #0a0a0a;
-  color: #fff;
-}
-.header {
-  background: linear-gradient(90deg, #b58d33, #f6c45b);
-  color: #fff;
-  text-align: center;
-  padding: 15px;
-  font-size: 20px;
-  font-weight: bold;
-}
-.container {
-  padding: 15px;
-}
-.balance-card {
-  background: #1a1a1a;
-  border: 1px solid #b58d33;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  margin-bottom: 15px;
-  box-shadow: 0 0 10px rgba(255, 204, 0, 0.2);
-}
-.balance-card h2 {
-  margin: 0;
-  color: #f6c45b;
-}
-.option {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #1a1a1a;
-  border-radius: 10px;
-  padding: 15px;
-  margin: 10px 0;
-  border: 1px solid #b58d33;
-  box-shadow: 0 0 10px rgba(255, 204, 0, 0.1);
-}
-.option img {
-  width: 35px;
-  height: 35px;
-}
-.option span {
-  flex: 1;
-  margin-left: 10px;
-  font-weight: 500;
-  color: #fff;
-}
-.logout {
-  background: linear-gradient(90deg, #b58d33, #f6c45b);
-  border: none;
-  border-radius: 10px;
-  padding: 12px;
-  width: 100%;
-  color: #000;
-  font-size: 16px;
-  font-weight: bold;
-  margin-top: 20px;
-}
-.navbar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #111;
-  display: flex;
-  justify-content: space-around;
-  border-top: 1px solid #b58d33;
-  padding: 10px 0;
-}
-.navbar a {
-  color: #b58d33;
-  text-decoration: none;
-  font-size: 14px;
-}
-</style>
-</head>
-<body>
-<div class="header">My Account</div>
-
-<div class="container">
-  <div class="balance-card">
-    <h2>Wallet Balance</h2>
-    <h3 id="balance">₹0</h3>
-    <p id="uid">UID: -</p>
-  </div>
-
-  <div class="option" onclick="window.location.href='deposit.html'">
-    <img src="deposit.png" alt="deposit" />
-    <span>Deposit</span>
-  </div>
-
-  <div class="option" onclick="window.location.href='withdrawal.html'">
-    <img src="withdrawal.png" alt="withdraw" />
-    <span>Withdrawal</span>
-  </div>
-
-  <div class="option" onclick="window.location.href='customer.html'">
-    <img src="customer.png" alt="customer" />
-    <span>Customer Service</span>
-  </div>
-
-  <button class="logout" id="logout">Logout</button>
-</div>
-
-<div class="navbar">
-  <a href="home.html">Home</a>
-  <a href="activity.html">Activity</a>
-  <a href="promotion.html">Promotion</a>
-  <a href="account_FINAL_firebase.html">Account</a>
-</div>
-
-<!-- Firebase Logic -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
-    authDomain: "terminal-xxrr.firebaseapp.com",
-    databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "terminal-xxrr",
-    storageBucket: "terminal-xxrr.firebasestorage.app",
-    messagingSenderId: "722753278120",
-    appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
-    measurementId: "G-E3MZH3E1K5"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  function loadUserRealtime() {
-    const uid = localStorage.getItem("uid");
-    if (!uid) {
-      window.location.href = "login.html";
-      return;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account - TashanWin Style</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #0d0d0d;
+      color: #fff;
+      padding-bottom: 80px;
     }
 
-    const uidEl = document.getElementById("uid");
-    uidEl.textContent = "UID: " + uid;
+    .container {
+      padding: 15px;
+    }
 
-    const balanceRef = ref(db, "users/" + uid + "/balance");
-    onValue(balanceRef, (snapshot) => {
-      const balance = snapshot.val() ?? 0;
-      document.getElementById("balance").textContent = "₹" + balance;
-    });
-  }
+    /* Profile Header */
+    .profile-card {
+      background: linear-gradient(135deg, #2b2b2b, #1a1a1a);
+      border-radius: 14px;
+      padding: 15px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    loadUserRealtime();
+    .profile-card img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
 
-    document.getElementById("logout").addEventListener("click", () => {
+    .profile-card .uid {
+      color: #f6c343;
+      font-size: 14px;
+    }
+
+    .profile-card .balance {
+      font-size: 16px;
+      margin: 8px 0;
+    }
+
+    .wallet-btn {
+      background: linear-gradient(135deg, #f6c343, #e19b32);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      color: #000;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Main Options */
+    .main-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .option-box {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      color: #f6c343;
+      font-weight: bold;
+      font-size: 13px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .option-box img {
+      width: 40px;
+      height: 40px;
+      display: block;
+      margin: 0 auto 6px;
+    }
+
+    /* Service Center Section */
+    .service-center {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .service-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #333;
+      color: #ccc;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .service-item:last-child {
+      border-bottom: none;
+    }
+
+    .service-item span {
+      color: #f6c343;
+    }
+
+    .logout {
+      color: #f66;
+      cursor: pointer;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #1a1a1a;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 0;
+      border-top: 1px solid #2b2b2b;
+      z-index: 100;
+    }
+
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      color: #aaa;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .nav-item img {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      transition: 0.3s;
+      filter: brightness(0) saturate(100%) invert(77%) sepia(36%) saturate(438%) hue-rotate(9deg) brightness(102%) contrast(95%);
+    }
+
+    .nav-item.active img {
+      filter: brightness(1.3) saturate(200%) hue-rotate(10deg);
+    }
+
+    .nav-item.active {
+      color: #f6c343;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Profile Section -->
+    <div class="profile-card">
+      <img src="avatar.png" alt="User Avatar" />
+      <div class="uid">UID: 123456789</div>
+      <div class="balance">Balance: ₹0.00</div>
+      <button class="wallet-btn">Enter Wallet</button>
+    </div>
+
+    <!-- Main Options -->
+    <div class="main-options">
+      <a href="deposit.html" class="option-box">
+        <img src="deposit.png" alt="Deposit" />
+        Deposit
+      </a>
+      <a href="withdraw.html" class="option-box">
+        <img src="withdrawal.png" alt="Withdraw" />
+        Withdraw
+      </a>
+      <a href="customer.html" class="option-box">
+        <img src="service.png" alt="Customer Service" />
+        Customer Service
+      </a>
+    </div>
+
+    <!-- Service Center -->
+    <div class="service-center">
+      <div class="service-item">Settings <span>›</span></div>
+      <div class="service-item">Feedback <span>›</span></div>
+      <div class="service-item">About Us <span>›</span></div>
+      <div class="service-item logout" onclick="logout()">Logout <span>›</span></div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <a href="home.html" class="nav-item">
+      <img src="home.png" alt="Home" />
+      <span>Home</span>
+    </a>
+    <a href="activity.html" class="nav-item">
+      <img src="activity.png" alt="Activity" />
+      <span>Activity</span>
+    </a>
+    <a href="promotion.html" class="nav-item">
+      <img src="promotion.png" alt="Promotion" />
+      <span>Promotion</span>
+    </a>
+    <a href="account.html" class="nav-item active">
+      <img src="account.png" alt="Account" />
+      <span>Account</span>
+    </a>
+  </div>
+
+  <script>
+    function logout() {
       localStorage.clear();
-      window.location.href = "login.html";
-    });
+      alert('Logout successful!');
+      window.location.href = 'login.html';
+    }
+  </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
+  authDomain: "terminal-xxrr.firebaseapp.com",
+  databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "terminal-xxrr",
+  storageBucket: "terminal-xxrr.firebasestorage.app",
+  messagingSenderId: "722753278120",
+  appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
+  measurementId: "G-E3MZH3E1K5"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const uid = localStorage.getItem("uid");
+if (uid) {
+  const balanceRef = ref(db, "users/" + uid + "/balance");
+  const balanceElement = document.querySelector("#wallet-balance");
+
+  onValue(balanceRef, (snapshot) => {
+    const balance = snapshot.val() || 0;
+    if (balanceElement) {
+      balanceElement.innerHTML = "₹" + balance.toFixed(2);
+      balanceElement.style.opacity = "0.5";
+      setTimeout(() => balanceElement.style.opacity = "1", 400);
+    }
   });
+}
 </script>
 
 </body>
