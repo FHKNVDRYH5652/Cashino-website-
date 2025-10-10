@@ -1,9 +1,10 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Account - Ratan Win</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Account - Ratan Win</title>
+<style>
     body {
       font-family: Arial, sans-serif;
       background: #000;
@@ -75,36 +76,39 @@
       cursor: pointer;
     }
   </style>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
 </head>
-<body>  <div class="balance-box">
-    <span>Total Balance: ₹<span id="walletBalance">0</span></span>
-    <button onclick="enterWallet()">Enter Wallet</button>
-  </div>  <div class="grid-3">
-    <div class="btn" onclick="goTo('deposit.html')">
-      <img src="deposit.png" alt="Deposit">
+<body> <div class="balance-box">
+<span>Total Balance: ₹<span id="walletBalance">0</span></span>
+<button onclick="enterWallet()">Enter Wallet</button>
+</div> <div class="grid-3">
+<div class="btn" onclick="goTo('deposit.html')">
+<img alt="Deposit" src="deposit.png"/>
       Deposit
     </div>
-    <div class="btn" onclick="goTo('withdrawal.html')">
-      <img src="withdrawal.png" alt="Withdraw">
+<div class="btn" onclick="goTo('withdrawal.html')">
+<img alt="Withdraw" src="withdrawal.png"/>
       Withdraw
     </div>
-    <div class="btn">
-      <img src="customer-service.png" alt="Customer Service">
+<div class="btn">
+<img alt="Customer Service" src="customer-service.png"/>
       Customer Service
     </div>
-  </div>  <div class="full-btn">Game History</div>
-  <div class="full-btn">Transaction</div>
-  <div class="full-btn">Deposit History</div>
-  <div class="full-btn">Withdraw History</div>
-  <div class="full-btn">Notification <span style="color:red;">84</span></div>
-  <div class="full-btn">Gifts</div>
-  <div class="full-btn">My Tournament</div>
-  <div class="full-btn">Game Statistics</div>
-  <div class="full-btn">Language <span style="float:right;">English</span></div>
-  <div class="full-btn">Settings</div>
-  <div class="full-btn">Feedback</div>
-  <div class="full-btn">Announcement</div>
-  <div class="full-btn">About Us</div>  <div class="logout" onclick="logout()">Log Out</div>  <script>
+</div> <div class="full-btn">Game History</div>
+<div class="full-btn">Transaction</div>
+<div class="full-btn">Deposit History</div>
+<div class="full-btn">Withdraw History</div>
+<div class="full-btn">Notification <span style="color:red;">84</span></div>
+<div class="full-btn">Gifts</div>
+<div class="full-btn">My Tournament</div>
+<div class="full-btn">Game Statistics</div>
+<div class="full-btn">Language <span style="float:right;">English</span></div>
+<div class="full-btn">Settings</div>
+<div class="full-btn">Feedback</div>
+<div class="full-btn">Announcement</div>
+<div class="full-btn">About Us</div> <div class="logout" onclick="logout()">Log Out</div> <script>
     function loadBalance() {
       let balance = localStorage.getItem("walletBalance");
       if (!balance) {
@@ -127,5 +131,32 @@
     }
 
     loadBalance();
-  </script></body>
+  </script>
+<script>
+        
+const firebaseConfig = {
+  apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
+  authDomain: "terminal-xxrr.firebaseapp.com",
+  databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "terminal-xxrr",
+  storageBucket: "terminal-xxrr.firebasestorage.app",
+  messagingSenderId: "722753278120",
+  appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
+  measurementId: "G-E3MZH3E1K5"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+        const uid = localStorage.getItem('uid');
+        if(uid){
+            db.ref('users/'+uid).on('value',s=>{
+                if(s.exists()){
+                    const u=s.val();
+                    document.getElementById('walletBalance').textContent = (u.balance||0).toFixed(2);
+                    localStorage.setItem('walletBalance',(u.balance||0).toFixed(2));
+                }
+            });
+        }
+        </script>
+</body>
 </html>
