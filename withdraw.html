@@ -440,10 +440,10 @@ function saveAdmin(id){
 
 </script>
 
-<!-- 🔥 Firebase Live Sync System -->
+<!-- 🔥 Firebase Live Sync + UID Based Per-User History -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, push, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, set, onValue, update, push, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
@@ -459,14 +459,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// 🧾 Save Withdraw Request (Firebase + LocalStorage)
-window.submitWithdrawToFirebase = function(rec) {
-  const reqRef = ref(db, 'withdrawRequests/' + rec.id);
-  set(reqRef, rec);
-};
+// 🆔 UID generator
+function ensureUID(){
+  let uid = localStorage.getItem('userUID');
+  if(!uid){
+    uid = 'uid' + Math.floor(100000 + Math.random() * 900000);
+    localStorage.setItem('userUID', uid);
+  }
+  return uid;
+}
+const USER_UID = ensureUID();
 
-// Override original submitWithdraw() safely
-const oldSubmit = window.submitWithdraw;
+// 🟢 Submit withdraw to Firebase + local
 window.submitWithdraw = function() {
   const acc = JSON.parse(localStorage.getItem('savedBank'));
   const amt = parseFloat(document.getElementById('amount').value||0);
@@ -477,36 +481,65 @@ window.submitWithdraw = function() {
 
   const id = 'WD'+new Date().toISOString().replace(/[-:.TZ]/g,'').slice(0,14) + Math.random().toString(16).slice(2,6);
   const rec = {
-    id, amount: amt, bank: acc.bank, fullname: acc.fullname, accno: acc.accno,
-    ifsc: acc.ifsc, phone: acc.phone, status:'Pending', remark:'', time: new Date().toISOString()
+    uid: USER_UID,
+    id,
+    amount: amt,
+    bank: acc.bank,
+    fullname: acc.fullname,
+    accno: acc.accno,
+    ifsc: acc.ifsc,
+    phone: acc.phone,
+    status:'Pending',
+    remark:'',
+    time: new Date().toISOString()
   };
 
-  // Save locally (old system)
+  // Local save
   const hist = JSON.parse(localStorage.getItem('withdrawHist')||'[]');
   hist.push(rec);
   localStorage.setItem('withdrawHist', JSON.stringify(hist));
   localStorage.setItem('walletBalance', String(bal-amt));
 
-  // Send to Firebase
-  submitWithdrawToFirebase(rec);
+  // Firebase save
+  set(ref(db, `withdrawRequests/${USER_UID}/${id}`), rec);
   alert('Withdrawal submitted successfully!');
 };
 
-// 🟢 Realtime Firebase listener for all users (live updates)
-function loadFirebaseWithdraws(){
-  const listRef = ref(db, 'withdrawRequests');
+// 🔁 User: Load only their own history (realtime)
+function loadUserWithdraws(){
+  const listRef = ref(db, `withdrawRequests/${USER_UID}`);
   onValue(listRef, (snapshot) => {
     const data = snapshot.val() || {};
     const histArray = Object.values(data).reverse();
     localStorage.setItem('withdrawHist', JSON.stringify(histArray));
     if(document.getElementById('hist-list')) renderHistoryPreview();
     if(document.getElementById('hist-full')) renderHistoryFull();
-    if(document.getElementById('admin-rows')) renderFirebaseAdmin(histArray);
   });
 }
 
-// 🧩 Admin panel live renderer
-window.renderFirebaseAdmin = function(data){
+// 🧾 Admin: Load all users’ requests combined
+function loadAllForAdmin(){
+  const rootRef = ref(db, 'withdrawRequests');
+  onValue(rootRef, (snapshot)=>{
+    const data = snapshot.val() || {};
+    const all = [];
+    Object.keys(data).forEach(uid=>{
+      Object.values(data[uid]).forEach(r=>all.push(r));
+    });
+    renderAdminFromFirebase(all.reverse());
+  });
+}
+
+// 💾 Admin update
+window.saveFirebaseAdmin = function(id, uid){
+  const st = document.getElementById('st-'+id)?.value || 'Pending';
+  const rm = document.getElementById('rm-'+id)?.value || '';
+  update(ref(db, `withdrawRequests/${uid}/${id}`), {status: st, remark: rm});
+  alert('Updated successfully');
+};
+
+// 🧠 Render admin list
+window.renderAdminFromFirebase = function(data){
   const tbody = document.getElementById('admin-rows');
   if(!tbody) return;
   tbody.innerHTML = data.map(h=>`
@@ -516,6 +549,7 @@ window.renderFirebaseAdmin = function(data){
       <td>₹${h.amount}</td>
       <td>${h.status}</td>
       <td>${h.remark||''}</td>
+      <td><small>${h.uid}</small></td>
       <td>
         <div class="admin-actions">
           <select id="st-${h.id}">
@@ -524,32 +558,23 @@ window.renderFirebaseAdmin = function(data){
             <option ${h.status==='Rejected'?'selected':''}>Rejected</option>
           </select>
           <input id="rm-${h.id}" placeholder="Remark" value="${h.remark||''}">
-          <button onclick="saveFirebaseAdmin('${h.id}')">Save</button>
+          <button onclick="saveFirebaseAdmin('${h.id}','${h.uid}')">Save</button>
         </div>
       </td>
     </tr>
   `).join('');
 };
 
-// 💾 Save Admin updates (status/remark)
-window.saveFirebaseAdmin = function(id){
-  const st = document.getElementById('st-'+id)?.value || 'Pending';
-  const rm = document.getElementById('rm-'+id)?.value || '';
-  const reqRef = ref(db, 'withdrawRequests/' + id);
-  update(reqRef, {status: st, remark: rm});
-  alert('Updated successfully in Firebase');
-};
-
-// 🧠 Hook Firebase after admin login success
+// 🔐 After admin login
 const oldLoginAdmin = window.loginAdmin;
 window.loginAdmin = function(){
-  if(typeof oldLoginAdmin === 'function') oldLoginAdmin();
-  setTimeout(()=>loadFirebaseWithdraws(), 1000);
+  if(typeof oldLoginAdmin==='function') oldLoginAdmin();
+  setTimeout(()=>loadAllForAdmin(),1000);
 };
 
-// 🔁 Auto load realtime updates for everyone
+// 🧩 On load → start realtime sync for user
 window.addEventListener('load', ()=>{
-  loadFirebaseWithdraws();
+  loadUserWithdraws();
 });
 </script>
 
