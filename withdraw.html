@@ -439,5 +439,98 @@ function saveAdmin(id){
 }
 
 </script>
+
+<!-- 🔥 Firebase Sync Addon (non-destructive) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
+  authDomain: "terminal-xxrr.firebaseapp.com",
+  databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "terminal-xxrr",
+  storageBucket: "terminal-xxrr.firebasestorage.app",
+  messagingSenderId: "722753278120",
+  appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
+  measurementId: "G-E3MZH3E1K5"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ---- Send withdrawal request to Firebase ----
+window.submitWithdrawToFirebase = function (rec) {
+  const reqRef = ref(db, 'withdrawRequests/' + rec.id);
+  set(reqRef, rec);
+};
+
+// Hook into existing submitWithdraw()
+const oldSubmit = window.submitWithdraw;
+window.submitWithdraw = function () {
+  const acc = JSON.parse(localStorage.getItem('savedBank'));
+  const amt = parseFloat(document.getElementById('amount').value||0);
+  const bal = parseFloat(localStorage.getItem('walletBalance')||'0');
+  if(!acc){ alert('Please add bank account first'); return; }
+  if(amt < 500 || amt > 50000){ alert('Withdrawal amount range ₹500-₹50,000'); return; }
+  if(amt > bal){ alert('Insufficient balance'); return; }
+  const id = 'WD'+new Date().toISOString().replace(/[-:.TZ]/g,'').slice(0,14) + Math.random().toString(16).slice(2,6);
+  const rec = {
+    id, amount: amt, bank: acc.bank, fullname: acc.fullname, accno: acc.accno,
+    ifsc: acc.ifsc, phone: acc.phone, status:'Pending', remark:'', time: new Date().toISOString()
+  };
+  // Save locally (old logic)
+  if (typeof oldSubmit === 'function') oldSubmit();
+  // Send to Firebase
+  submitWithdrawToFirebase(rec);
+};
+
+// ---- Admin panel live sync ----
+window.loadFirebaseAdmin = function () {
+  const listRef = ref(db, 'withdrawRequests');
+  onValue(listRef, (snapshot) => {
+    const data = snapshot.val() || {};
+    const tbody = document.getElementById('admin-rows');
+    if (!tbody) return;
+    tbody.innerHTML = Object.values(data).reverse().map(r => `
+      <tr>
+        <td>${r.id}</td>
+        <td>${r.bank}<br><small>${r.fullname}</small></td>
+        <td>₹${r.amount}</td>
+        <td>${r.status}</td>
+        <td>${r.remark||''}</td>
+        <td>
+          <div class='admin-actions'>
+            <select id='st-${r.id}'>
+              <option ${r.status==='Pending'?'selected':''}>Pending</option>
+              <option ${r.status==='Completed'?'selected':''}>Completed</option>
+              <option ${r.status==='Rejected'?'selected':''}>Rejected</option>
+            </select>
+            <input id='rm-${r.id}' placeholder='Remark' value='${r.remark||''}'>
+            <button onclick="saveFirebaseAdmin('${r.id}')">Save</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  });
+};
+
+// ---- Save admin updates ----
+window.saveFirebaseAdmin = function (id) {
+  const status = document.getElementById('st-'+id)?.value || 'Pending';
+  const remark = document.getElementById('rm-'+id)?.value || '';
+  const reqRef = ref(db, 'withdrawRequests/' + id);
+  update(reqRef, { status, remark });
+  alert('Updated successfully on Firebase');
+};
+
+// Auto start Firebase admin sync after login success
+const oldLoginAdmin = window.loginAdmin;
+window.loginAdmin = function () {
+  if (typeof oldLoginAdmin === 'function') oldLoginAdmin();
+  setTimeout(() => { loadFirebaseAdmin(); }, 1500);
+};
+</script>
+
 </body>
 </html>
