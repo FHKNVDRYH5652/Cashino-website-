@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Withdraw</title>
 <style>
   :root{
@@ -73,172 +74,164 @@
   .admin-actions select,.admin-actions input{background:#0f0e10;border:1px solid #2b2530;color:#e8dcc1;border-radius:8px;padding:8px}
   .admin-actions button{background:#ffc656;color:#201810;border:none;border-radius:8px;padding:8px 12px;font-weight:800}
 </style>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
 </head>
 <body>
 <header>
-  <h1>Withdraw</h1>
-  <a href="#" id="openHistoryTop">Withdrawal history</a>
+<h1>Withdraw</h1>
+<a href="#" id="openHistoryTop">Withdrawal history</a>
 </header>
-
 <!-- MAIN VIEW -->
 <div class="page view active" id="view-main">
-  <!-- Wallet -->
-  <div class="wallet">
-    <div class="label">Available balance</div>
-    <div class="amt">₹<span id="walletAmt">0.00</span></div>
-  </div>
-
-  <!-- ARPay note + tiles (only Bank Card enabled) -->
-  <div class="card">
-    <div class="ar-head">
-      <div style="width:34px;height:34px;border-radius:8px;background:#201a11;display:flex;align-items:center;justify-content:center">🏦</div>
-      <div>
-        <div class="ar-title">ARPay</div>
-        <div style="color:#a9977c">Supports UPI for fast payment, and bonuses for withdrawals</div>
-      </div>
-      <div style="margin-left:auto;background:#3a2d20;color:#ffd37e;font-weight:900;border-radius:10px;padding:4px 8px">1%</div>
-    </div>
-    <div class="tile-row">
-      <div class="tile" id="bankTile">BANK CARD<span class="sub">Only bank supported</span></div>
-      <div class="tile disabled">UPI<span class="sub">Not available</span></div>
-      <div class="tile disabled">USDT<span class="sub">Not available</span></div>
-    </div>
-  </div>
-
-  <!-- Add bank / saved bank -->
-  <div class="card" id="benef-card">
-    <div id="benef-empty">
-      <div class="add-bank" onclick="openBankForm()">
-        <div class="plus">+</div>
-        <div>
-          <big>Add a bank account number</big>
-        </div>
-      </div>
-      <div class="warn">Need to add beneficiary information to be able to withdraw money</div>
-    </div>
-    <div id="benef-saved" class="view">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:28px;height:28px;border-radius:6px;background:#201a11;display:flex;align-items:center;justify-content:center">🔥</div>
-        <div style="flex:1">
-          <div id="savedBankName" style="color:#e7d2a9;font-weight:800;margin-bottom:4px">Bank name</div>
-          <div style="color:#b9ad95" id="savedBankMasked">000000****0000</div>
-        </div>
-        <div style="opacity:.5">›</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Amount -->
-  <div class="card">
-    <div class="input-wrap">
-      <div class="icon">₹</div>
-      <input id="amount" type="number" inputmode="numeric" class="input" placeholder="Please enter the amount" oninput="updateReceive()">
-    </div>
-    <div class="row">
-      <div>Withdrawable balance <b>₹<span id="withdrawable">0.00</span></b></div>
-      <button class="pill" onclick="fillAll()">All</button>
-    </div>
-    <div class="row">
-      <div>Withdrawal amount received</div>
-      <div style="font-weight:900;color:#ffcc66">₹<span id="receive">0.00</span></div>
-    </div>
-    <button class="btn" onclick="submitWithdraw()">Withdraw</button>
-  </div>
-
-  <!-- Tips -->
-  <div class="card hint">
-    <ul style="padding-left:16px;margin:0">
-      <li>Need to bet <span style="color:#ff6a6a">₹0.00</span> to be able to withdraw</li>
-      <li>Withdraw time <span style="color:#ff6a6a">00:00-23:59</span></li>
-      <li>Inday Remaining Withdrawal Times<span style="margin-left:6px">3</span></li>
-      <li>Withdrawal amount range <span style="color:#ff6a6a">₹500.00-₹50,000.00</span></li>
-      <li>Please confirm your beneficial account information before withdrawing. If your information is incorrect, our company will not be liable for the amount of loss</li>
-      <li>If your beneficial information is incorrect, please contact customer service</li>
-    </ul>
-  </div>
-
-  <!-- History preview -->
-  <div class="card">
-    <div class="history-title">📄 Withdrawal history</div>
-    <div id="hist-list"></div>
-  </div>
+<!-- Wallet -->
+<div class="wallet">
+<div class="label">Available balance</div>
+<div class="amt">₹<span id="walletAmt">0.00</span></div>
 </div>
-
+<!-- ARPay note + tiles (only Bank Card enabled) -->
+<div class="card">
+<div class="ar-head">
+<div style="width:34px;height:34px;border-radius:8px;background:#201a11;display:flex;align-items:center;justify-content:center">🏦</div>
+<div>
+<div class="ar-title">ARPay</div>
+<div style="color:#a9977c">Supports UPI for fast payment, and bonuses for withdrawals</div>
+</div>
+<div style="margin-left:auto;background:#3a2d20;color:#ffd37e;font-weight:900;border-radius:10px;padding:4px 8px">1%</div>
+</div>
+<div class="tile-row">
+<div class="tile" id="bankTile">BANK CARD<span class="sub">Only bank supported</span></div>
+<div class="tile disabled">UPI<span class="sub">Not available</span></div>
+<div class="tile disabled">USDT<span class="sub">Not available</span></div>
+</div>
+</div>
+<!-- Add bank / saved bank -->
+<div class="card" id="benef-card">
+<div id="benef-empty">
+<div class="add-bank" onclick="openBankForm()">
+<div class="plus">+</div>
+<div>
+<big>Add a bank account number</big>
+</div>
+</div>
+<div class="warn">Need to add beneficiary information to be able to withdraw money</div>
+</div>
+<div class="view" id="benef-saved">
+<div style="display:flex;align-items:center;gap:10px">
+<div style="width:28px;height:28px;border-radius:6px;background:#201a11;display:flex;align-items:center;justify-content:center">🔥</div>
+<div style="flex:1">
+<div id="savedBankName" style="color:#e7d2a9;font-weight:800;margin-bottom:4px">Bank name</div>
+<div id="savedBankMasked" style="color:#b9ad95">000000****0000</div>
+</div>
+<div style="opacity:.5">›</div>
+</div>
+</div>
+</div>
+<!-- Amount -->
+<div class="card">
+<div class="input-wrap">
+<div class="icon">₹</div>
+<input class="input" id="amount" inputmode="numeric" oninput="updateReceive()" placeholder="Please enter the amount" type="number"/>
+</div>
+<div class="row">
+<div>Withdrawable balance <b>₹<span id="withdrawable">0.00</span></b></div>
+<button class="pill" onclick="fillAll()">All</button>
+</div>
+<div class="row">
+<div>Withdrawal amount received</div>
+<div style="font-weight:900;color:#ffcc66">₹<span id="receive">0.00</span></div>
+</div>
+<button class="btn" onclick="submitWithdraw()">Withdraw</button>
+</div>
+<!-- Tips -->
+<div class="card hint">
+<ul style="padding-left:16px;margin:0">
+<li>Need to bet <span style="color:#ff6a6a">₹0.00</span> to be able to withdraw</li>
+<li>Withdraw time <span style="color:#ff6a6a">00:00-23:59</span></li>
+<li>Inday Remaining Withdrawal Times<span style="margin-left:6px">3</span></li>
+<li>Withdrawal amount range <span style="color:#ff6a6a">₹500.00-₹50,000.00</span></li>
+<li>Please confirm your beneficial account information before withdrawing. If your information is incorrect, our company will not be liable for the amount of loss</li>
+<li>If your beneficial information is incorrect, please contact customer service</li>
+</ul>
+</div>
+<!-- History preview -->
+<div class="card">
+<div class="history-title">📄 Withdrawal history</div>
+<div id="hist-list"></div>
+</div>
+</div>
 <!-- ADD BANK VIEW (sheet modal) -->
 <div class="modal" id="modal-add">
-  <div class="sheet">
-    <div class="page">
-      <h2 style="margin:6px 0 12px;color:#f6d9a3">Add a bank account number</h2>
-      <div class="card" style="padding:0">
-        <button class="tile" style="width:100%;border-radius:14px 14px 0 0" onclick="openChooseBank()">Please select a bank</button>
-        <div style="padding:12px">
-          <div style="display:flex;align-items:center;gap:10px;margin:10px 0"><span>👤</span><input id="fullname" class="search" placeholder="Please enter the recipient's name"></div>
-          <div style="display:flex;align-items:center;gap:10px;margin:10px 0"><span>💳</span><input id="accno" class="search" placeholder="Please enter your bank account number"></div>
-          <div style="display:flex;align-items:center;gap:10px;margin:10px 0"><span>📞</span><input id="phone" class="search" placeholder="Please enter your phone number"></div>
-          <div style="display:flex;align-items:center;gap:10px;margin:10px 0"><span>🔑</span><input id="ifsc" class="search" placeholder="Please enter IFSC code"></div>
-          <button class="btn" onclick="saveBank()">Save</button>
-          <button class="btn" style="margin-top:8px;background:#2a2530;color:#e8dcc1" onclick="closeAdd()">Cancel</button>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="sheet">
+<div class="page">
+<h2 style="margin:6px 0 12px;color:#f6d9a3">Add a bank account number</h2>
+<div class="card" style="padding:0">
+<button class="tile" onclick="openChooseBank()" style="width:100%;border-radius:14px 14px 0 0">Please select a bank</button>
+<div style="padding:12px">
+<div style="display:flex;align-items:center;gap:10px;margin:10px 0"><span>👤</span><input class="search" id="fullname" placeholder="Please enter the recipient's name"/></div>
+<div style="display:flex;align-items:center;gap:10px;margin:10px 0"><span>💳</span><input class="search" id="accno" placeholder="Please enter your bank account number"/></div>
+<div style="display:flex;align-items:center;gap:10px;margin:10px 0"><span>📞</span><input class="search" id="phone" placeholder="Please enter your phone number"/></div>
+<div style="display:flex;align-items:center;gap:10px;margin:10px 0"><span>🔑</span><input class="search" id="ifsc" placeholder="Please enter IFSC code"/></div>
+<button class="btn" onclick="saveBank()">Save</button>
+<button class="btn" onclick="closeAdd()" style="margin-top:8px;background:#2a2530;color:#e8dcc1">Cancel</button>
 </div>
-
+</div>
+</div>
+</div>
+</div>
 <!-- CHOOSE BANK SHEET -->
 <div class="modal" id="modal-choose">
-  <div class="sheet">
-    <div class="hd">
-      <input id="bankSearch" class="search" placeholder="Search bank" oninput="filterBanks()">
-    </div>
-    <div id="bankList"></div>
-  </div>
+<div class="sheet">
+<div class="hd">
+<input class="search" id="bankSearch" oninput="filterBanks()" placeholder="Search bank"/>
 </div>
-
+<div id="bankList"></div>
+</div>
+</div>
 <!-- FULL HISTORY VIEW -->
 <div class="modal" id="modal-history">
-  <div class="sheet">
-    <div class="hd">
-      <div style="font-weight:900;color:#f6d9a3">Withdrawal history</div>
-      <div style="margin-left:auto;display:flex;gap:8px">
-        <input type="date" id="fromDate" class="search" style="max-width:150px">
-        <input type="date" id="toDate" class="search" style="max-width:150px">
-        <select id="statusFilter" class="search" style="max-width:150px">
-          <option value="">All</option>
-          <option>Pending</option>
-          <option>Completed</option>
-          <option>Rejected</option>
-        </select>
-      </div>
-    </div>
-    <div class="page">
-      <div id="hist-full"></div>
-      <button class="btn" onclick="closeHistory()">Close</button>
-    </div>
-  </div>
+<div class="sheet">
+<div class="hd">
+<div style="font-weight:900;color:#f6d9a3">Withdrawal history</div>
+<div style="margin-left:auto;display:flex;gap:8px">
+<input class="search" id="fromDate" style="max-width:150px" type="date"/>
+<input class="search" id="toDate" style="max-width:150px" type="date"/>
+<select class="search" id="statusFilter" style="max-width:150px">
+<option value="">All</option>
+<option>Pending</option>
+<option>Completed</option>
+<option>Rejected</option>
+</select>
 </div>
-
+</div>
+<div class="page">
+<div id="hist-full"></div>
+<button class="btn" onclick="closeHistory()">Close</button>
+</div>
+</div>
+</div>
 <!-- ADMIN floating button -->
-<div class="admin-fab" title="admin" onclick="openAdmin()">×</div>
+<div class="admin-fab" onclick="openAdmin()" title="admin">×</div>
 <div class="modal admin-modal" id="modal-admin">
-  <div class="sheet">
-    <div class="admin-login" id="admin-login">
-      <h3 style="margin:4px 0 10px;color:#f6d9a3">Admin Panel</h3>
-      <input type="password" id="admin-pass" class="search" placeholder="Password">
-      <button class="btn" style="margin-top:10px" onclick="loginAdmin()">Login</button>
-      <div id="admin-msg" style="color:#ff7a7a;margin-top:8px"></div>
-    </div>
-    <div class="admin-list view" id="admin-panel">
-      <div class="page">
-        <table>
-          <thead><tr><th>Order</th><th>Bank</th><th>Amount</th><th>Status</th><th>Remark</th><th>Action</th></tr></thead>
-          <tbody id="admin-rows"></tbody>
-        </table>
-        <button class="btn" onclick="closeAdmin()">Close</button>
-      </div>
-    </div>
-  </div>
+<div class="sheet">
+<div class="admin-login" id="admin-login">
+<h3 style="margin:4px 0 10px;color:#f6d9a3">Admin Panel</h3>
+<input class="search" id="admin-pass" placeholder="Password" type="password"/>
+<button class="btn" onclick="loginAdmin()" style="margin-top:10px">Login</button>
+<div id="admin-msg" style="color:#ff7a7a;margin-top:8px"></div>
 </div>
-
+<div class="admin-list view" id="admin-panel">
+<div class="page">
+<table>
+<thead><tr><th>Order</th><th>Bank</th><th>Amount</th><th>Status</th><th>Remark</th><th>Action</th></tr></thead>
+<tbody id="admin-rows"></tbody>
+</table>
+<button class="btn" onclick="closeAdmin()">Close</button>
+</div>
+</div>
+</div>
+</div>
 <script>
 // ---------- Helpers & Storage ----------
 const money = n => (+(n||0)).toFixed(2);
@@ -439,5 +432,36 @@ function saveAdmin(id){
 }
 
 </script>
+
+<script>
+        
+const firebaseConfig = {
+  apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
+  authDomain: "terminal-xxrr.firebaseapp.com",
+  databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "terminal-xxrr",
+  storageBucket: "terminal-xxrr.firebasestorage.app",
+  messagingSenderId: "722753278120",
+  appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
+  measurementId: "G-E3MZH3E1K5"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+        async function submitWithdraw(){
+            const uid=localStorage.getItem('uid');
+            const amt=parseFloat(document.getElementById('amount').value||0);
+            if(!uid||amt<=0)return alert('Invalid');
+            const ref=db.ref('users/'+uid+'/balance');
+            const snap=await ref.get();
+            if(!snap.exists())return alert('No balance record');
+            let bal=snap.val();
+            if(bal<amt)return alert('Insufficient');
+            bal-=amt;
+            await db.ref('users/'+uid).update({balance:bal,wingoBalance:bal});
+            localStorage.setItem('walletBalance',bal.toFixed(2));
+            alert('Withdraw submitted successfully');
+        }
+        </script>
 </body>
 </html>
