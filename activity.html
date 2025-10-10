@@ -295,5 +295,24 @@
     // Initial render for history (if someone lands directly on gift page section via deep-link in future)
     renderHistory();
   </script>
+
+<!-- Firebase (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
+  authDomain: "terminal-xxrr.firebaseapp.com",
+  databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "terminal-xxrr",
+  storageBucket: "terminal-xxrr.firebasestorage.app",
+  messagingSenderId: "722753278120",
+  appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
+  measurementId: "G-E3MZH3E1K5"
+};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+</script>
+
 </body>
 </html>
