@@ -1,207 +1,131 @@
-
-<!DOCTYPE html>
-
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Account - TashanWin Style</title>
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account - Ratan Win</title>
+  <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #0d0d0d;
-      color: #fff;
-      padding-bottom: 80px;
+      background: #000;
+      margin: 0;
+      padding: 0;
+      color: white;
     }
-
-    .container {
-      padding: 15px;
-    }
-
-    /* Profile Header */
-    .profile-card {
-      background: linear-gradient(135deg, #2b2b2b, #1a1a1a);
-      border-radius: 14px;
+    .balance-box {
+      background: linear-gradient(90deg, #ff7e00, #ff3300);
       padding: 15px;
       text-align: center;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-    }
-
-    .profile-card img {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      margin-bottom: 10px;
-    }
-
-    .profile-card .uid {
-      color: #f6c343;
-      font-size: 14px;
-    }
-
-    .profile-card .balance {
-      font-size: 16px;
-      margin: 8px 0;
-    }
-
-    .wallet-btn {
-      background: linear-gradient(135deg, #f6c343, #e19b32);
-      border: none;
-      padding: 10px 20px;
-      border-radius: 25px;
-      color: #000;
+      font-size: 20px;
       font-weight: bold;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    /* Main Options */
-    .main-options {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .option-box {
-      background: #1a1a1a;
-      border-radius: 12px;
-      padding: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      color: #f6c343;
-      font-weight: bold;
-      font-size: 13px;
-      text-decoration: none;
-      display: block;
-    }
-
-    .option-box img {
-      width: 40px;
-      height: 40px;
-      display: block;
-      margin: 0 auto 6px;
-    }
-
-    /* Service Center Section */
-    .service-center {
-      background: #1a1a1a;
-      border-radius: 12px;
-      padding: 15px;
-    }
-
-    .service-item {
-      padding: 10px 0;
-      border-bottom: 1px solid #333;
-      color: #ccc;
-      font-size: 14px;
+      border-radius: 5px;
+      margin: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-
-    .service-item:last-child {
-      border-bottom: none;
-    }
-
-    .service-item span {
-      color: #f6c343;
-    }
-
-    .logout {
-      color: #f66;
+    .balance-box button {
+      background: white;
+      color: black;
+      border: none;
+      padding: 5px 15px;
+      border-radius: 5px;
+      font-weight: bold;
       cursor: pointer;
     }
-
-    /* Bottom Navigation */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #1a1a1a;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 8px 0;
-      border-top: 1px solid #2b2b2b;
-      z-index: 100;
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 10px;
     }
-
-    .nav-item {
-      flex: 1;
+    .btn {
+      padding: 15px;
+      border-radius: 5px;
+      font-size: 16px;
       text-align: center;
-      color: #aaa;
-      font-size: 12px;
-      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+      background: #222;
+      color: white;
     }
-
-    .nav-item img {
-      width: 24px;
-      height: 24px;
-      margin-bottom: 4px;
+    .btn img {
       display: block;
-      margin-left: auto;
-      margin-right: auto;
-      transition: 0.3s;
-      filter: brightness(0) saturate(100%) invert(77%) sepia(36%) saturate(438%) hue-rotate(9deg) brightness(102%) contrast(95%);
+      margin: 0 auto 8px;
+      width: 35px;
+      height: 35px;
     }
-
-    .nav-item.active img {
-      filter: brightness(1.3) saturate(200%) hue-rotate(10deg);
+    .full-btn {
+      margin: 10px;
+      background: #222;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: left;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
     }
-
-    .nav-item.active {
-      color: #f6c343;
+    .logout {
+      margin: 10px;
+      padding: 15px;
+      background: #ff0000;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
     }
   </style>
 </head>
-<body>
-<div class="container">
-<!-- Profile Section -->
-<div class="profile-card">
-<img alt="User Avatar" src="avatar.png"/>
-<div class="uid">UID: 123456789</div>
-<div class="balance">Balance: ₹0.00</div>
-<button class="wallet-btn">Enter Wallet</button>
-</div>
-<!-- Main Options -->
-<div class="main-options"><a class="option-box" href="deposit.html"><img alt="Deposit" src="deposit.png"/>Deposit</a><a class="option-box" href="withdrawal.html"><img alt="Withdraw" src="withdrawal.png"/>Withdraw</a></div>
-<!-- Service Center -->
-<div class="service-center">
-<div class="service-item">Settings <span>›</span></div>
-<div class="service-item">Feedback <span>›</span></div>
-<div class="service-item">About Us <span>›</span></div>
-<div class="service-item logout" onclick="logout()">Logout <span>›</span></div>
-</div>
-</div>
-<!-- Bottom Navigation -->
-<div class="bottom-nav">
-<a class="nav-item" href="home.html">
-<img alt="Home" src="home.png"/>
-<span>Home</span>
-</a>
-<a class="nav-item" href="activity.html">
-<img alt="Activity" src="activity.png"/>
-<span>Activity</span>
-</a>
-<a class="nav-item" href="promotion.html">
-<img alt="Promotion" src="promotion.png"/>
-<span>Promotion</span>
-</a>
-<a class="nav-item active" href="account.html">
-<img alt="Account" src="account.png"/>
-<span>Account</span>
-</a>
-</div>
-<script>
-    function logout() {
-      localStorage.clear();
-      alert('Logout successful!');
-      window.location.href = 'login.html';
+<body>  <div class="balance-box">
+    <span>Total Balance: ₹<span id="walletBalance">0</span></span>
+    <button onclick="enterWallet()">Enter Wallet</button>
+  </div>  <div class="grid-3">
+    <div class="btn" onclick="goTo('deposit.html')">
+      <img src="deposit.png" alt="Deposit">
+      Deposit
+    </div>
+    <div class="btn" onclick="goTo('withdrawal.html')">
+      <img src="withdrawal.png" alt="Withdraw">
+      Withdraw
+    </div>
+    <div class="btn">
+      <img src="customer-service.png" alt="Customer Service">
+      Customer Service
+    </div>
+  </div>  <div class="full-btn">Game History</div>
+  <div class="full-btn">Transaction</div>
+  <div class="full-btn">Deposit History</div>
+  <div class="full-btn">Withdraw History</div>
+  <div class="full-btn">Notification <span style="color:red;">84</span></div>
+  <div class="full-btn">Gifts</div>
+  <div class="full-btn">My Tournament</div>
+  <div class="full-btn">Game Statistics</div>
+  <div class="full-btn">Language <span style="float:right;">English</span></div>
+  <div class="full-btn">Settings</div>
+  <div class="full-btn">Feedback</div>
+  <div class="full-btn">Announcement</div>
+  <div class="full-btn">About Us</div>  <div class="logout" onclick="logout()">Log Out</div>  <script>
+    function loadBalance() {
+      let balance = localStorage.getItem("walletBalance");
+      if (!balance) {
+        balance = 100;
+        localStorage.setItem("walletBalance", balance);
+      }
+      document.getElementById("walletBalance").innerText = balance;
     }
-  </script>
-</body>
+
+    function goTo(page) {
+      window.location.href = page;
+    }
+
+    function enterWallet() {
+      alert("Wallet Entered!");
+    }
+
+    function logout() {
+      alert("You are logged out!");
+    }
+
+    loadBalance();
+  </script></body>
 </html>
