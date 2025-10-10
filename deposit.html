@@ -114,14 +114,10 @@
           bal += parseFloat(h.amount);
           localStorage.setItem('walletBalance', money(bal));
 
-          // ✅ Update total deposit for gift condition sync (local)
-          let total = parseFloat(localStorage.getItem('totalDeposits') || '0');
-          total += parseFloat(h.amount);
-          localStorage.setItem('totalDeposits', total);
-
-          // Sync to Firebase (balance, wingoBalance, totalDeposits)
-          try{ updateFirebaseBalance(bal, parseFloat(h.amount)); }catch(e){ console.error('firebase credit error',e); }
-
+        // ✅ Update total deposit for gift condition sync
+        let total = parseFloat(localStorage.getItem('totalDeposits') || '0');
+        total += parseFloat(h.amount);
+        localStorage.setItem('totalDeposits', total);
           h.credited = true;
           changed = true;
         }
@@ -239,49 +235,6 @@
       }
     });
   })();
-</script>
-
-
-<!-- Firebase (compat) -->
-<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
-  authDomain: "terminal-xxrr.firebaseapp.com",
-  databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "terminal-xxrr",
-  storageBucket: "terminal-xxrr.firebasestorage.app",
-  messagingSenderId: "722753278120",
-  appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
-  measurementId: "G-E3MZH3E1K5"
-};
-if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-</script>
-
-
-<script>
-async function updateFirebaseBalance(newBal, amt){
-  try{
-    const uid = localStorage.getItem('uid');
-    if(!uid) {
-      // still keep totalDeposits local for guest users
-      console.log('No uid - skipping firebase update');
-      return;
-    }
-    const userRef = db.ref('users/' + uid);
-    const snap = await userRef.get();
-    let current = snap.exists() ? (snap.val().balance || 0) : 0;
-    // compute new totalDeposits
-    let total = snap.exists() && snap.val().totalDeposits ? Number(snap.val().totalDeposits) : Number(localStorage.getItem('totalDeposits')||0);
-    total = Number(total) + Number(amt || 0);
-    await userRef.update({ balance: Number(newBal), wingoBalance: Number(newBal), totalDeposits: total });
-    console.log('Firebase updated balance and totalDeposits', newBal, total);
-  }catch(err){
-    console.error('updateFirebaseBalance error', err);
-  }
-}
 </script>
 
 </body>
