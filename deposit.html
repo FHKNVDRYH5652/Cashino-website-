@@ -143,7 +143,10 @@
     his.push(entry);
     setHistory(his);
     renderHistory();
-    alert('Deposit request created! It will be processed shortly.');
+
+    // ✅ Redirect directly to qr.html page with parameters
+    const url = `qr.html?id=${encodeURIComponent(id)}&amt=${encodeURIComponent(amount)}&method=${encodeURIComponent(selectedMethod)}`;
+    window.location.href = url;
   }
 
   loadWallet();
