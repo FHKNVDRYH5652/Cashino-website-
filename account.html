@@ -1,11 +1,12 @@
 
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Account - TashanWin Style</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Account - TashanWin Style</title>
+<style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -158,101 +159,49 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Profile Section -->
-    <div class="profile-card">
-      <img src="avatar.png" alt="User Avatar" />
-      <div class="uid">UID: 123456789</div>
-      <div class="balance">Balance: ₹0.00</div>
-      <button class="wallet-btn">Enter Wallet</button>
-    </div>
-
-    <!-- Main Options -->
-    <div class="main-options">
-      <a href="deposit.html" class="option-box">
-        <img src="deposit.png" alt="Deposit" />
-        Deposit
-      </a>
-      <a href="withdraw.html" class="option-box">
-        <img src="withdrawal.png" alt="Withdraw" />
-        Withdraw
-      </a>
-      <a href="customer.html" class="option-box">
-        <img src="service.png" alt="Customer Service" />
-        Customer Service
-      </a>
-    </div>
-
-    <!-- Service Center -->
-    <div class="service-center">
-      <div class="service-item">Settings <span>›</span></div>
-      <div class="service-item">Feedback <span>›</span></div>
-      <div class="service-item">About Us <span>›</span></div>
-      <div class="service-item logout" onclick="logout()">Logout <span>›</span></div>
-    </div>
-  </div>
-
-  <!-- Bottom Navigation -->
-  <div class="bottom-nav">
-    <a href="home.html" class="nav-item">
-      <img src="home.png" alt="Home" />
-      <span>Home</span>
-    </a>
-    <a href="activity.html" class="nav-item">
-      <img src="activity.png" alt="Activity" />
-      <span>Activity</span>
-    </a>
-    <a href="promotion.html" class="nav-item">
-      <img src="promotion.png" alt="Promotion" />
-      <span>Promotion</span>
-    </a>
-    <a href="account.html" class="nav-item active">
-      <img src="account.png" alt="Account" />
-      <span>Account</span>
-    </a>
-  </div>
-
-  <script>
+<div class="container">
+<!-- Profile Section -->
+<div class="profile-card">
+<img alt="User Avatar" src="avatar.png"/>
+<div class="uid">UID: 123456789</div>
+<div class="balance">Balance: ₹0.00</div>
+<button class="wallet-btn">Enter Wallet</button>
+</div>
+<!-- Main Options -->
+<div class="main-options"><a class="option-box" href="deposit.html"><img alt="Deposit" src="deposit.png"/>Deposit</a><a class="option-box" href="withdrawal.html"><img alt="Withdraw" src="withdrawal.png"/>Withdraw</a></div>
+<!-- Service Center -->
+<div class="service-center">
+<div class="service-item">Settings <span>›</span></div>
+<div class="service-item">Feedback <span>›</span></div>
+<div class="service-item">About Us <span>›</span></div>
+<div class="service-item logout" onclick="logout()">Logout <span>›</span></div>
+</div>
+</div>
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+<a class="nav-item" href="home.html">
+<img alt="Home" src="home.png"/>
+<span>Home</span>
+</a>
+<a class="nav-item" href="activity.html">
+<img alt="Activity" src="activity.png"/>
+<span>Activity</span>
+</a>
+<a class="nav-item" href="promotion.html">
+<img alt="Promotion" src="promotion.png"/>
+<span>Promotion</span>
+</a>
+<a class="nav-item active" href="account.html">
+<img alt="Account" src="account.png"/>
+<span>Account</span>
+</a>
+</div>
+<script>
     function logout() {
       localStorage.clear();
       alert('Logout successful!');
       window.location.href = 'login.html';
     }
   </script>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
-  authDomain: "terminal-xxrr.firebaseapp.com",
-  databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "terminal-xxrr",
-  storageBucket: "terminal-xxrr.firebasestorage.app",
-  messagingSenderId: "722753278120",
-  appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
-  measurementId: "G-E3MZH3E1K5"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-const uid = localStorage.getItem("uid");
-if (uid) {
-  const balanceRef = ref(db, "users/" + uid + "/balance");
-  const balanceElement = document.querySelector("#wallet-balance");
-
-  onValue(balanceRef, (snapshot) => {
-    const balance = snapshot.val() || 0;
-    if (balanceElement) {
-      balanceElement.innerHTML = "₹" + balance.toFixed(2);
-      balanceElement.style.opacity = "0.5";
-      setTimeout(() => balanceElement.style.opacity = "1", 400);
-    }
-  });
-}
-</script>
-
 </body>
 </html>
