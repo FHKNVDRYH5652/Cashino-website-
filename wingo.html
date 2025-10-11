@@ -317,6 +317,18 @@ function loadWallet(){
   updateBalance(w);
 }
 function updateBalance(v){
+  // 🔄 Minimal Firebase Wallet Sync (added safely)
+  try {
+    const uid = localStorage.getItem('uid');
+    if (uid && typeof firebase !== 'undefined') {
+      const refPath = firebase.database().ref('users/' + uid + '/balance');
+      const localBal = parseFloat(localStorage.getItem('walletBalance') || 0);
+      refPath.set(localBal);
+    }
+  } catch (e) {
+    console.error('Firebase sync error:', e);
+  }
+
   localStorage.setItem('walletBalance', (+v).toFixed(2));
   document.getElementById('balance').textContent = '₹' + (+v).toFixed(2);
 }
