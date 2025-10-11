@@ -502,6 +502,7 @@ window.submitWithdraw = function() {
 
   // Firebase save
   set(ref(db, `withdrawRequests/${USER_UID}/${id}`), rec);
+  syncUI(); // update wallet instantly
   alert('Withdrawal submitted successfully!');
 };
 
