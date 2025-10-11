@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,8 +74,8 @@
 <body>
   <h2>Scan & Pay</h2>
   <div class="qr-box">
-    <img id="qrImage" src="" alt="QR Code">
-    <div class="upi-id">UPI ID:perfect.k@ptaxis</div>
+    <img id="qrImage" src="qr.png" alt="QR Code">
+    <div class="upi-id">UPI ID: perfect.k@ptaxis</div>
     <div id="amountText"></div>
   </div>
 
@@ -112,7 +111,6 @@
     let params = getQueryParams();
     let amt = params["amt"];
     document.getElementById("amountText").innerText = "You are paying ₹" + amt;
-    document.getElementById("qrImage").src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=qrperfect.k@ptaxis&am=" + amt;
   }
 </script>
 </body>
