@@ -1,149 +1,133 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>RATAN WIN - Register</title>
 <style>
-    body{
-      margin:0;
-      font-family:Poppins, sans-serif;
-      background:#111;
-      color:#fff;
-    }
-    header{
-      background:#1c1c1c;
-      padding:10px 15px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-    .logo{
-      font-size:22px;
-      font-weight:800;
-      background:linear-gradient(90deg,#ff7e22,#25b63c);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    }
-    .flag{
-      font-size:14px;
-    }
-    main{
-      padding:20px;
-    }
-    h2{
-      font-size:20px;
-      margin-bottom:5px;
-    }
-    p.desc{
-      font-size:14px;
-      color:#aaa;
-      margin-bottom:20px;
-    }
-    label{
-      display:block;
-      font-size:14px;
-      margin:15px 0 5px;
-    }
-    input{
-      width:100%;
-      padding:12px;
-      border-radius:6px;
-      border:none;
-      background:#222;
-      color:#fff;
-    }
-    .checkbox{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin-top:15px;
-    }
+    body{margin:0;font-family:Poppins, sans-serif;background:#111;color:#fff;}
+    header{background:#1c1c1c;padding:10px 15px;display:flex;justify-content:space-between;align-items:center;}
+    .logo{font-size:22px;font-weight:800;background:linear-gradient(90deg,#ff7e22,#25b63c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .flag{font-size:14px;}
+    main{padding:20px;}
+    h2{font-size:20px;margin-bottom:5px;}
+    p.desc{font-size:14px;color:#aaa;margin-bottom:20px;}
+    label{display:block;font-size:14px;margin:15px 0 5px;}
+    input{width:100%;padding:12px;border-radius:6px;border:none;background:#222;color:#fff;}
+    .checkbox{display:flex;align-items:center;gap:8px;margin-top:15px;}
     .checkbox a{color:red;text-decoration:none}
-    button{
-      width:100%;
-      padding:14px;
-      margin-top:20px;
-      border:none;
-      border-radius:30px;
-      background:linear-gradient(90deg,#ffb321,#ff7e22);
-      font-size:16px;
-      font-weight:700;
-      cursor:pointer;
-    }
-    .login-link{
-      margin-top:15px;
-      text-align:center;
-      font-size:14px;
-    }
+    button{width:100%;padding:14px;margin-top:20px;border:none;border-radius:30px;background:linear-gradient(90deg,#ffb321,#ff7e22);font-size:16px;font-weight:700;cursor:pointer;}
+    .login-link{margin-top:15px;text-align:center;font-size:14px;}
     .login-link a{color:#ffb321;text-decoration:none}
-  </style>
+</style>
 
+<!-- Using compat SDK to match existing register code -->
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
 </head>
 <body>
 <header>
-<div class="logo">RATAN WIN</div>
-<div class="flag">🌐 EN</div>
+  <div class="logo">RATAN WIN</div>
+  <div class="flag">🌐 EN</div>
 </header>
 <main>
-<h2>Register</h2>
-<p class="desc">Please register by phone number or email</p>
-<form id="registerForm">
-<label>Phone number</label>
-<input placeholder="+91 Please enter the phone number" required="" type="text"/>
-<label>Set password</label>
-<input placeholder="Set password" required="" type="password"/>
-<label>Confirm password</label>
-<input placeholder="Confirm password" required="" type="password"/>
-<label>Invite code</label>
-<input type="text" value="13413405256"/>
-<div class="checkbox">
-<input required="" type="checkbox"/>
-<span>I have read and agree <a href="#">[Privacy Agreement]</a></span>
-</div>
-<button type="submit">Register</button>
-</form>
-<div class="login-link">
-      Already have an account? <a href="login.html">Login</a>
-</div>
+  <h2>Register</h2>
+  <p class="desc">Please register by phone number or email</p>
+
+  <form id="registerForm">
+    <label>Phone number</label>
+    <input id="regPhone" placeholder="+91 Please enter the phone number" required type="text"/>
+    <label>Set password</label>
+    <input id="regPass" placeholder="Set password" required type="password"/>
+    <label>Confirm password</label>
+    <input id="regPass2" placeholder="Confirm password" required type="password"/>
+    <label>Invite code</label>
+    <input id="regInvite" type="text" value="13413405256"/>
+    <div class="checkbox">
+      <input id="agree" required type="checkbox"/>
+      <span>I have read and agree <a href="#">[Privacy Agreement]</a></span>
+    </div>
+    <button type="submit">Register</button>
+  </form>
+
+  <div class="login-link">Already have an account? <a href="login.html">Login</a></div>
 </main>
-<script>
-    document.getElementById('registerForm').addEventListener('submit', function(e){
-      e.preventDefault();
-      window.location.href = 'home.html'; // after register redirect to home
-    });
-  </script>
-
 
 <script>
-        
-const firebaseConfig = {
-  apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
-  authDomain: "terminal-xxrr.firebaseapp.com",
-  databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "terminal-xxrr",
-  storageBucket: "terminal-xxrr.firebasestorage.app",
-  messagingSenderId: "722753278120",
-  appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
-  measurementId: "G-E3MZH3E1K5"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+  // Firebase config (same as your original)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
+    authDomain: "terminal-xxrr.firebaseapp.com",
+    databaseURL: "https://terminal-xxrr-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "terminal-xxrr",
+    storageBucket: "terminal-xxrr.firebasestorage.app",
+    messagingSenderId: "722753278120",
+    appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
+    measurementId: "G-E3MZH3E1K5"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-        function genUID6(){return 'UID'+Math.floor(100000+Math.random()*900000);}
-        async function registerUser(phone, password){
-            const snap = await db.ref('users').orderByChild('phone').equalTo(phone).get();
-            if(snap.exists()) return {ok:false,err:'Already registered'};
-            let uid = genUID6();
-            const userObj = {uid,phone,password,balance:100,wingoBalance:100,createdAt:Date.now()};
-            await db.ref('users/'+uid).set(userObj);
-            localStorage.setItem('uid',uid);
-            localStorage.setItem('walletBalance','100');
-            return {ok:true};
-        }
-        </script>
+  function toast(msg){
+    let t = document.getElementById('__reg_toast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = '__reg_toast';
+      t.style.position = 'fixed';
+      t.style.left = '50%';
+      t.style.bottom = '18%';
+      t.style.transform = 'translateX(-50%)';
+      t.style.background = 'rgba(0,0,0,0.8)';
+      t.style.color = '#fff';
+      t.style.padding = '10px 16px';
+      t.style.borderRadius = '10px';
+      t.style.zIndex = 99999;
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(()=> t.style.display = 'none', 2500);
+  }
+
+  function genUID6(){ return 'UID' + Math.floor(100000 + Math.random()*900000); }
+
+  async function registerUser(phone, password){
+    phone = phone.trim();
+    if(!phone) return {ok:false, err:'Phone required'};
+    // check duplicate
+    const q = db.ref('users').orderByChild('phone').equalTo(phone);
+    const snap = await q.once('value');
+    if(snap.exists()){
+      return {ok:false, err:'Phone already registered'};
+    }
+    const uid = genUID6();
+    const userObj = { uid, phone, password, balance:100, wingoBalance:100, createdAt: Date.now() };
+    await db.ref('users/' + uid).set(userObj);
+    // store basic local info
+    localStorage.setItem('uid', uid);
+    localStorage.setItem('phone', phone);
+    localStorage.setItem('balance', '100');
+    return { ok:true, uid };
+  }
+
+  document.getElementById('registerForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const phone = document.getElementById('regPhone').value.trim();
+    const p1 = document.getElementById('regPass').value.trim();
+    const p2 = document.getElementById('regPass2').value.trim();
+    if(!phone || !p1 || !p2){ toast('Please fill all fields'); return; }
+    if(p1 !== p2){ toast('Passwords do not match'); return; }
+    try{
+      toast('Registering...');
+      const res = await registerUser(phone, p1);
+      if(!res.ok){ toast(res.err); return; }
+      toast('Registered successfully');
+      setTimeout(()=> window.location.href = 'home.html', 900);
+    }catch(err){
+      console.error(err);
+      toast('Registration failed');
+    }
+  });
+</script>
 </body>
 </html>
