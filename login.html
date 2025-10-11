@@ -5,60 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RATAN WIN - Login</title>
   <style>
-    body{
-      margin:0;
-      font-family:Poppins, sans-serif;
-      background:#111;
-      color:#fff;
-    }
-    header{
-      background:#1c1c1c;
-      padding:10px 15px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-    .logo{
-      font-size:22px;
-      font-weight:800;
-      background:linear-gradient(90deg,#ff7e22,#25b63c);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    }
+    body{margin:0;font-family:Poppins, sans-serif;background:#111;color:#fff;}
+    header{background:#1c1c1c;padding:10px 15px;display:flex;justify-content:space-between;align-items:center;}
+    .logo{font-size:22px;font-weight:800;background:linear-gradient(90deg,#ff7e22,#25b63c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
     .flag{font-size:14px}
     main{padding:20px}
     h2{font-size:20px;margin-bottom:5px}
     p.desc{font-size:14px;color:#aaa;margin-bottom:20px}
     .tabs{display:flex;margin-bottom:15px;border-bottom:1px solid #444}
-    .tab{
-      flex:1;text-align:center;padding:10px;font-size:14px;
-      cursor:pointer;color:#aaa;
-    }
+    .tab{flex:1;text-align:center;padding:10px;font-size:14px;cursor:pointer;color:#aaa}
     .tab.active{color:#ffb321;border-bottom:2px solid #ffb321}
     label{display:block;font-size:14px;margin:15px 0 5px}
     input{width:100%;padding:12px;border-radius:6px;border:none;background:#222;color:#fff}
     .remember{display:flex;align-items:center;gap:8px;margin:10px 0}
     .remember input{width:auto}
-    button{
-      width:100%;padding:14px;margin-top:20px;border:none;border-radius:30px;
-      background:linear-gradient(90deg,#ffb321,#ff7e22);
-      font-size:16px;font-weight:700;cursor:pointer;
-    }
+    button{width:100%;padding:14px;margin-top:20px;border:none;border-radius:30px;background:linear-gradient(90deg,#ffb321,#ff7e22);font-size:16px;font-weight:700;cursor:pointer}
     .register-link{text-align:center;margin-top:10px}
     .register-link a{color:#ffb321;text-decoration:none}
     footer{margin-top:30px;text-align:center;font-size:14px;color:#ccc}
     footer a{color:#ffb321;text-decoration:none;margin:0 10px}
   </style>
+  <!-- use compat SDK to match register -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
 </head>
 <body>
-  <header>
-    <div class="logo">RATAN WIN</div>
-    <div class="flag">🌐 EN</div>
-  </header>
+  <header><div class="logo">RATAN WIN</div><div class="flag">🌐 EN</div></header>
   <main>
     <h2>Log in</h2>
-    <p class="desc">Please log in with your phone number or email<br>
-    If you forget your password, please contact customer service</p>
+    <p class="desc">Please log in with your phone number or email<br>If you forget your password, please contact customer service</p>
 
     <div class="tabs">
       <div class="tab active">phone number</div>
@@ -67,39 +42,24 @@
 
     <form id="loginForm">
       <label>Phone number</label>
-      <input type="text" placeholder="+91 Enter phone number" required>
+      <input id="loginPhone" type="text" placeholder="+91 Enter phone number" required>
 
       <label>Password</label>
-      <input type="password" placeholder="Enter password" required>
+      <input id="loginPass" type="password" placeholder="Enter password" required>
 
       <div class="remember">
         <input type="checkbox" checked> <span>Remember password</span>
       </div>
 
-      <button type="submit">Log in</button>
+      <button id="loginBtn" type="submit">Log in</button>
     </form>
 
-    <div class="register-link">
-      Don't have an account? <a href="register.html">Register</a>
-    </div>
+    <div class="register-link">Don't have an account? <a href="register.html">Register</a></div>
   </main>
 
-  <footer>
-    <a href="#">Forgot password</a> |
-    <a href="#">Customer Service</a>
-  </footer>
+  <footer><a href="#">Forgot password</a> | <a href="#">Customer Service</a></footer>
 
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e){
-      e.preventDefault();
-      window.location.href = 'home.html'; // redirect after login
-    });
-  </script>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
+<script>
   const firebaseConfig = {
     apiKey: "AIzaSyBs7eQyMrcN8kJWMHl2ac2UZHlYQ6DypD8",
     authDomain: "terminal-xxrr.firebaseapp.com",
@@ -110,9 +70,8 @@
     appId: "1:722753278120:web:bfa37aab39635a4e57f29d",
     measurementId: "G-E3MZH3E1K5"
   };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
   function toast(msg){
     let t = document.getElementById('__login_toast');
@@ -136,66 +95,45 @@
   }
 
   async function loginUser(phone, password){
-    const dbRef = ref(db);
-    const snapshot = await get(child(dbRef, "users"));
-    if(snapshot.exists()){
-      const users = snapshot.val();
-      for(const uid in users){
-        const user = users[uid];
-        if(user.phone === phone && user.password === password){
-          return { ok:true, uid:uid, balance:user.balance };
+    phone = phone.trim();
+    if(!phone || !password) return {ok:false, err:'Fill all fields'};
+    // query users by phone
+    const q = db.ref('users').orderByChild('phone').equalTo(phone);
+    const snap = await q.once('value');
+    if(snap.exists()){
+      // find child where password matches
+      let found = null;
+      snap.forEach(childSnap=>{
+        const u = childSnap.val();
+        if(u.password === password){
+          found = { uid: u.uid || childSnap.key, balance: u.balance || 0, phone: u.phone };
         }
-      }
-      return { ok:false, err:"Invalid phone or password" };
+      });
+      if(found) return { ok:true, ...found };
+      return { ok:false, err:'Invalid phone or password' };
+    } else {
+      return { ok:false, err:'No user found with this phone' };
     }
-    return { ok:false, err:"No users found" };
   }
 
-  function findLoginInputs(){
-    const inputs = document.querySelectorAll('input');
-    let phoneEl=null, passEl=null, btn=null;
-    for(const el of inputs){
-      const t = (el.getAttribute('type')||'').toLowerCase();
-      const ph = (el.getAttribute('placeholder')||'').toLowerCase();
-      const id = (el.id||'').toLowerCase();
-      const name = (el.name||'').toLowerCase();
-      if(!phoneEl && (t==='tel' || ph.includes('phone') || ph.includes('number') || id.includes('phone') || name.includes('phone'))) phoneEl = el;
-      if(!passEl && (t==='password' || ph.includes('password') || id.includes('pass') || name.includes('pass'))) passEl = el;
+  document.getElementById('loginForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const phone = document.getElementById('loginPhone').value.trim();
+    const password = document.getElementById('loginPass').value.trim();
+    if(!phone || !password){ toast('Please fill all fields'); return; }
+    try{
+      toast('Logging in...');
+      const res = await loginUser(phone, password);
+      if(!res.ok){ toast(res.err); return; }
+      localStorage.setItem('uid', res.uid);
+      localStorage.setItem('phone', res.phone);
+      localStorage.setItem('balance', res.balance);
+      toast('Login successful');
+      setTimeout(()=> window.location.href = 'home.html', 900);
+    }catch(err){
+      console.error(err);
+      toast('Login failed');
     }
-    const buttons = document.querySelectorAll('button, input[type="button"], input[type="submit"]');
-    for(const b of buttons){
-      const txt = (b.textContent || b.value || '').toLowerCase();
-      const cls = (b.className||'').toLowerCase();
-      if(!btn && (txt.includes('login') || cls.includes('login') || (b.id||'').toLowerCase().includes('login'))) btn = b;
-    }
-    if(!btn) btn = document.querySelector('button, input[type="submit"], input[type="button"]');
-    return { phoneEl, passEl, btn };
-  }
-
-  document.addEventListener('DOMContentLoaded', ()=>{
-    const { phoneEl, passEl, btn } = findLoginInputs();
-    if(!phoneEl || !passEl || !btn){
-      console.warn('Login script: could not find inputs/buttons. Please ensure correct markup.');
-      return;
-    }
-    btn.addEventListener('click', async (e)=>{
-      e.preventDefault();
-      const phone = phoneEl.value.trim();
-      const password = passEl.value.trim();
-      if(!phone || !password){ toast('Please fill all fields'); return; }
-      try{
-        const res = await loginUser(phone, password);
-        if(!res.ok){ toast(res.err); return; }
-        localStorage.setItem('uid', res.uid);
-        localStorage.setItem('phone', phone);
-        localStorage.setItem('balance', res.balance);
-        toast('Login successful');
-        setTimeout(()=> window.location.href = 'home.html', 1200);
-      }catch(err){
-        console.error(err);
-        toast('Login failed');
-      }
-    });
   });
 </script>
 
